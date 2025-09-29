@@ -27,11 +27,14 @@ export class RoomManager {
 
     joinroom(roomid:string,user2:user){
         const room = this.Rooms.get(roomid);
+        console.log(this.Rooms)
+        console.log(room)
         if(!room){
             return 
         }
         room.user2 = user2;
         this.Rooms.set(roomid,room);
+        console.log(room)
         return "Roomcreted"
     }
 
