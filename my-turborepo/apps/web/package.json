@@ -14,15 +14,19 @@
     "@repo/ui": "workspace:*",
     "next": "^15.5.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "socket.io-client": "^4.8.1",
+    "tailwind": "^4.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^22.15.3",
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
     "eslint": "^9.34.0",
+    "tailwindcss": "^4.1.13",
     "typescript": "5.9.2"
   }
 }

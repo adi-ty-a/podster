@@ -1,5 +1,5 @@
 import type { Socket } from "socket.io";
-import type { RoomManager } from "./room.js";
+import { RoomManager } from "./room.js";
 
 export interface user{
     socket:Socket,
@@ -8,8 +8,11 @@ export interface user{
 
 export class User {
     private Users:user[];
+    private roomhandler :RoomManager
+
     constructor(){
         this.Users = [];
+        this.roomhandler =  new RoomManager();
     }
     adduser(name:string, socket:Socket){
         this.Users.push({name,socket});
@@ -19,16 +22,27 @@ export class User {
         this.Users = this.Users.filter(x => x.socket.id !== socketid);
     }
 
-    createroom(RoomManager:RoomManager,socket:Socket){
-        const roomid = RoomManager.createRooms({socket,name:"user1"});
-              console.log("reached")
-                    console.log(roomid);
-        socket.emit("creteroom",roomid)
+     createroom(socket:Socket){
+        const roomid =  this.roomhandler.createRooms({socket,name:"user1"});
+        socket.emit("roomid",roomid);
     }
 
-    joinroom( RoomManager:RoomManager,socket:Socket,roomid:string){
-        const res = RoomManager.joinroom(roomid,{socket,name:"user2"});
-        socket.emit("join",res)
+    joinroom(socket:Socket,roomid:string){
+        const res = this.roomhandler.joinroom(roomid,{socket,name:"user2"});
+        socket.emit("joined",res)
+    }
+
+    initHandler(socket:Socket){
+        socket.on("offer",({roomid,sdp}:{roomid:string,sdp:string})=>{
+            this.roomhandler.onOffer(roomid,sdp);
+        })
+        socket.on("answer",({roomid,sdp}:{roomid:string,sdp:string})=>{
+            this.roomhandler.onAnswer(roomid,sdp);
+        })
+
+        socket.on("new-ice-candidate",({roomid,candidate}:{roomid:string,candidate:RTCIceCandidate})=>{
+            this.roomhandler.onIceCandidate({roomid,candidate,socket});
+        })
     }
 
 
