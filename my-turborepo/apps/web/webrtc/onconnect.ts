@@ -2,8 +2,8 @@
         import { io } from "socket.io-client";
 
             const server = io("http://localhost:3001")
-        export function Connect(tracks:MediaStreamTrack,action:"join"|"create",roomid?:string,){
-            const newrtc : rtc = new rtc(server)
+        export function Connect(tracks:MediaStream,action:"join"|"create",roomid?:string,){
+            const newrtc : rtc = new rtc(tracks,server)
             if(action == "create"){
                 const res = server.emit("create")
                 console.log("sent")
