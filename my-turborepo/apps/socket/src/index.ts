@@ -21,8 +21,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on("join",(data)=>{
-      const roomid = data.roomid
-      
+      const roomid = data.roomid  
       console.log("provided roomid ");
       console.log(roomid);
       user.joinroom(socket,roomid);

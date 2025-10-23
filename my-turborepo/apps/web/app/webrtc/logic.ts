@@ -22,7 +22,6 @@ export class rtc{
     this.pc.onicecandidate =  this.handleICECandidateEvent.bind(this);
     this.pc.ontrack =  this.handletrack.bind(this);
     this.track.getTracks().forEach(track => this.pc.addTrack(track, this.track));
-    console.log("trackers here "+this.track)
     if(this.initaotr == true){
     this.pc.onnegotiationneeded = this.handleNegotiationNeededEvent.bind(this);
     }
@@ -40,8 +39,7 @@ export class rtc{
     }
 
     handletrack(event:any)  {
-        console.log("remote tracks added")
-            const remoteStream = event.streams[0];
+            const remoteStream =  event.streams[event.streams.length - 1];
             const remoteVideo = document.querySelector("video#remote") as HTMLVideoElement;
             if(remoteVideo){
                 remoteVideo.srcObject=remoteStream
@@ -57,9 +55,7 @@ export class rtc{
             if(streamobject.length == 0){
                  this.closeVideoCall();
             }
-
         }
-
     }
 
     async handleNegotiationNeededEvent(){
@@ -98,7 +94,6 @@ export class rtc{
     }
 
      handleNewICECandidateMsg(msg: any){
-        console.log(this.pc);
         if(!this.pc){
             console.log("pc is not defined yet")
         }
@@ -108,6 +103,7 @@ export class rtc{
 
     hangupcall(){
         this.closeVideoCall()
+        console.log("hangup")
         this.sendToServer({
             type:"hangup",
         })
@@ -121,10 +117,11 @@ export class rtc{
             
             const senderlist = this.pc.getSenders()
             senderlist.forEach((e)=>{
-                e.track?.stop
+                e.track?.stop()
             })
             
-            this.pc.close
+            this.pc.close()
+            console.log("closed webrtc")
         }
     }
     sendToServer(msg :any){

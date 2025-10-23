@@ -22,7 +22,7 @@ export class User {
         this.Users = this.Users.filter(x => x.socket.id !== socketid);
     }
 
-     createroom(socket:Socket){
+    createroom(socket:Socket){
         const roomid =  this.roomhandler.createRooms({socket,name:"user1"});
         socket.emit("roomid",roomid);
     }
@@ -42,6 +42,11 @@ export class User {
 
         socket.on("new-ice-candidate",({roomid,candidate}:{roomid:string,candidate:RTCIceCandidate})=>{
             this.roomhandler.onIceCandidate({roomid,candidate,socket});
+        })
+
+        socket.on("hangup",async ({roomid}:{roomid:string})=>{
+            await this.removeuser(socket.id)
+            socket.emit("room-closed")
         })
     }
 

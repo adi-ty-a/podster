@@ -20,27 +20,27 @@ export class RoomManager {
     }
 
     createRooms(user1:user){
-         this.roomid = this.generate().toString()
         this.Rooms.set(this.roomid,{
             user1,
         })
-        
         return this.roomid
     }
 
-    joinroom(roomid:string,user2:user){
+    joinroom(roomid:string,user:user){
+        this.roomid= roomid
         const room = this.Rooms.get(roomid);
         if(!room){
-            return 
-        }
-        room.user2 = user2;
+            this.createRooms(user)
+            return "Roomcreted"
+        }else{
+        room.user2 = user;
         this.Rooms.set(roomid,room);
         room.user1.socket.emit("send-offer",{
                 type:"send-offer",
                 roomid: this.roomid
             })
-        return "Roomcreted"
-
+        return "roomjoined"
+        }
     }
 
     onOffer(roomid:string, sdp :string){
@@ -73,6 +73,10 @@ export class RoomManager {
             room.user1.socket.emit("new-ice-candidate", { candidate });
         }
         }
+    }
+
+    onleave({roomid}:{roomid:string}){
+        this.Rooms.delete(roomid)
     }
 
     generate(){
