@@ -1,8 +1,17 @@
 import { Socket } from "socket.io-client";
 
+interface chat{
+    chat:{
+        id:"user1"|"user2",
+        message:string
+    }
+}
+
 export class rtc{
     private pc! : RTCPeerConnection 
     private socket :Socket
+    // private chats:chat[]
+    // public user:"user1"|"user2"
     public roomid!: string
     private initaotr!:boolean
     private track : MediaStream
@@ -127,6 +136,10 @@ export class rtc{
     sendToServer(msg :any){
         this.socket.emit(msg.type
             ,msg)
+    }
+
+    addchat(msg:string){
+
     }
 
 }

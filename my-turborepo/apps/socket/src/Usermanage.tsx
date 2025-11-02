@@ -24,7 +24,7 @@ export class User {
 
     createroom(socket:Socket){
         const roomid =  this.roomhandler.createRooms({socket,name:"user1"});
-        socket.emit("roomid",roomid);
+        socket.emit("roomid",roomid,"user1");
     }
 
     joinroom(socket:Socket,roomid:string){
@@ -33,6 +33,10 @@ export class User {
     }
 
     initHandler(socket:Socket){
+        socket.on("msg",({roomid,msg})=>{
+            this.roomhandler.onmessage({roomid,socket,msg});
+        })
+
         socket.on("offer",({roomid,sdp}:{roomid:string,sdp:string})=>{
             this.roomhandler.onOffer(roomid,sdp);
         })

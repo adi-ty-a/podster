@@ -18,6 +18,18 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
+  apps/chatbackend:
+    dependencies:
+      '@types/express':
+        specifier: ^5.0.3
+        version: 5.0.3
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
+      socket.io:
+        specifier: ^4.8.1
+        version: 4.8.1
+
   apps/socket:
     dependencies:
       '@types/cors':

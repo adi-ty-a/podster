@@ -65,13 +65,24 @@ export class RoomManager {
     } 
 
     onIceCandidate({roomid,candidate,socket}:{roomid:string,candidate:RTCIceCandidate,socket:Socket}){
-        const room = this.Rooms.get(roomid)
+        const room = this.Rooms.get(roomid);
         if(room){
             if (room.user1.socket.id === socket.id) {
         room.user2?.socket.emit("new-ice-candidate", { candidate });
         } else if (room.user2?.socket.id === socket.id) {
             room.user1.socket.emit("new-ice-candidate", { candidate });
         }
+        }
+    }
+
+    onmessage({roomid,socket,msg}:{roomid:string,socket:Socket,msg:string}){
+        const room = this.Rooms.get(roomid);
+        if(room){
+            if(socket.id == room.user1.socket.id){
+                room.user2?.socket.emit("msg",msg);
+            }else if(socket.id == room.user2?.socket.id){
+                room.user1.socket.emit("msg",msg);
+            }
         }
     }
 
