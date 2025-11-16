@@ -7,6 +7,7 @@ import { useWebrtc } from "../../webrtc/onconnect";
 import { useParams  } from 'next/navigation'
 import Chatbox from "../../components/chatbox";
 import { Recording } from "../../components/recording";
+import { Dialog } from "../../components/cardbox";
 
 export default function Room() {
     const recorderref = useRef<ReturnType<typeof Recording> | null>(null)
@@ -14,14 +15,15 @@ export default function Room() {
     const LocalstreamRef = useRef<MediaStream | null>(null);
     const [roomid,setroomid] = useState<string>("")
     const param = useParams ()
+    const [dialog,setdialog] = useState(false)
     const room = param.roomid 
     const {joinroom,togglevideo,toggleaduio,Localstream,hangup,sendmsg,chats} = useWebrtc(roomid)
 
     const joinref = useRef(false)
 
     useEffect(()=>{
-      if(Localstream && !recorderref.current){
-        recorderref.current = Recording(Localstream);
+      if(Localstream && !recorderref.current && room && typeof room === "string"){
+        recorderref.current = Recording(Localstream,room);
       }
     },[Localstream])
 
@@ -30,6 +32,11 @@ export default function Room() {
     setroomid(room)   
     }
     },[room])
+
+    const showdialog= ()=>{
+      setdialog(true);
+    }
+    
 
     const videoStop=async()=>{
       if(!recorderref.current) return 
@@ -54,6 +61,7 @@ useEffect(()=>{
 
   return (
     <>
+    {dialog ?? <Dialog/>}
       <div className="w-screen h-screen bg-white flex flex-col items-center">    
         <div className="flex pl-8 justify-between items-center w-full h-[10vh] bg-white border-b-2 border-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
           <div className="text-black text-4xl ">Podster</div>

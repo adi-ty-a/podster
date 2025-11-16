@@ -10,11 +10,10 @@ interface chat{
 export class rtc{
     private pc! : RTCPeerConnection 
     private socket :Socket
-    // private chats:chat[]
-    // public user:"user1"|"user2"
     public roomid!: string
     private initaotr!:boolean
     private track : MediaStream
+
     constructor( track:MediaStream,socket:Socket){
         this.socket = socket
         this.track = track
@@ -138,8 +137,5 @@ export class rtc{
             ,msg)
     }
 
-    addchat(msg:string){
-
-    }
 
 }

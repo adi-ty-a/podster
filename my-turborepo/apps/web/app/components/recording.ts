@@ -1,7 +1,6 @@
 import axios from "axios";
-import { format } from "path";
 
-export const Recording = (strean:MediaStream):{
+export const Recording = (strean:MediaStream,room:string):{
     startrecording:()=>void ,
     stopRecording:()=>Promise<{videoBlob:Blob,videoUrl:string}>
 } =>{
@@ -21,7 +20,7 @@ export const Recording = (strean:MediaStream):{
         recorder.stop()
         recorder.onstop = ()=>{
             const videoBlob = new Blob(data,{type:"video/webm"});
-            const videoFile = new File([videoBlob], "recorded-video.webm", { type: "video/webm" });
+            const videoFile = new File([videoBlob], `${room}.webm`, { type: "video/webm" });
             const videoUrl =URL.createObjectURL(videoBlob);
             resolve({videoUrl,videoBlob})
             splitchunks(videoFile);

@@ -11,17 +11,16 @@
             const LocalstreamRef = useRef<MediaStream | null>(null);
             let server :Socket  = useMemo(() => io("http://localhost:3001"), []);
             const [chats,setchats] = useState<chats[]>([])
-            
-
             const newrtc = useRef< rtc |null>(null)
-                useEffect(()=>{
+
+            useEffect(()=>{
                         const init = async()=>{
                         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                         setLocalStream(stream);
                         LocalstreamRef.current = stream
-                    }
-                    init()
-                },[])
+                  }
+                init()
+            },[])
 
                 function Connect(tracks:MediaStream,action:"join"|"create",roomid?:string,){
                     newrtc.current = new rtc(tracks,server)
@@ -44,14 +43,13 @@
                           // currtc.user = userno
                         })
                         server.on("msg",(data)=> {
-                          console.log("received the msg")
-                          console.log(data)
                           setchats((prev = [])=> [...prev,{user:"user2",msg:data}])
                         })
                         server.on("send-offer",(data)=>  currtc.createPeerConnection(true,data.roomid))
                         server.on("Offer",(msg) =>  currtc.handleVideoOfferMsg(msg))
                         server.on("answer",(msg) => currtc.handleVideoAnswerMsg(msg))
                         server.on("new-ice-candidate",(msg) => currtc.handleNewICECandidateMsg(msg))
+                        server.on("askstart",()=>{ })
                     }
                 } 
 
@@ -63,7 +61,6 @@
                 
                 const joinroom=()=>{
                   if(LocalstreamRef.current){
-
                   Connect(LocalstreamRef.current,"join",roomid)
                   }
                       
@@ -97,6 +94,15 @@
                   server.emit("msg",{roomid,msg})
                   setchats((prev = [])=> [...prev,{user:"user1",msg:msg}])
                 }
+
+                const startrec = ()=>{
+                  server.emit("startrec",roomid);
+                } 
+
+                const ansrec=()=>{
+                  server.emit("oktorec",roomid);
+                }
+
 
 
             return {createroom,joinroom,togglevideo,toggleaduio,Localstream,hangup,sendmsg,chats}

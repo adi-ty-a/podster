@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { v4 as uuid } from "uuid";
 import { useRouter } from 'next/navigation'
+import { Dialog } from "./components/cardbox";
 
 export default function Home() {
   const localvid = useRef<HTMLVideoElement>(null);
@@ -24,6 +25,8 @@ export default function Home() {
   }, []);
 
   return (
+    <>
+ 
     <div className="bg-[#100512] w-screen h-screen  overflow-hidden text-white">
       <div className="flex justify-center items-center mt-[25vh] gap-6">
         <button className="bg-[#28002b] text-[#fad9fc] rounded-md w-fit h-fit px-2 py-3 shadow-[0_8px_30px_#18101a]" onClick={()=>{
@@ -32,5 +35,6 @@ export default function Home() {
         <video autoPlay ref={localvid} className="h-[300px] rounded-xl"></video>
       </div>
     </div>
+    </>
   );
 }

@@ -48,6 +48,14 @@ export class User {
             this.roomhandler.onIceCandidate({roomid,candidate,socket});
         })
 
+        socket.on("startrec",({roomid,socket}:{roomid:string,socket:Socket})=>{
+            this.roomhandler.onstartrec({roomid,socket})
+        })
+
+        socket.on("oktorec",({roomid,socket}:{roomid:string,socket:Socket})=>{
+            this.roomhandler.onconfirmtorecord({roomid,socket})
+        })
+
         socket.on("hangup",async ({roomid}:{roomid:string})=>{
             await this.removeuser(socket.id)
             socket.emit("room-closed")

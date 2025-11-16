@@ -90,6 +90,24 @@ export class RoomManager {
         this.Rooms.delete(roomid)
     }
 
+    onstartrec({roomid,socket}:{roomid:string,socket:Socket}){
+        const room = this.Rooms.get(roomid)
+        if(room){
+            const user = Object.values(room).find(u => u.id != socket.id)
+            if (!user) return;
+            user.socket.emit("askstart");
+        }
+    }   
+
+    onconfirmtorecord({roomid,socket}:{roomid:string,socket:Socket}){
+        const room = this.Rooms.get(roomid)
+        if(room){
+            const user = Object.values(room).find(u => u.id != socket.id)
+            if (!user) return;
+            user.socket.emit("oktorec");
+        }
+    }   
+    
     generate(){
         return GlobalRoomId++;
     }
