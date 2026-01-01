@@ -1,9 +1,19 @@
 import express, { type Request, type Response } from "express";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { upload } from "./multer.js";
 import { mergeChunks } from "./merge.js";
+import {S3Client,PutObjectCommand, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand} from "@aws-sdk/client-s3"
 
 const app = express();
+
 app.use(express.json())
+    const S3 = new S3Client({
+            region:"ap-south-1",
+            credentials:{
+                accessKeyId:"REMOVED",
+                secretAccessKey:"REMOVED"
+            }
+        })
 
 app.post("/upload",upload.single("video"),async(req:Request,res:Response)=>{
     if(!req.file){
@@ -25,6 +35,87 @@ app.post("/upload",upload.single("video"),async(req:Request,res:Response)=>{
       .status(500)
       .json({ error: 'An error occurred while uploading the video.' });
   }
+})
+
+app.post("/signedurl",async(req,res)=>{
+    try{
+        const keyvalue = req.body.key;
+        console.log(keyvalue);
+        const cmd = new PutObjectCommand({
+            Bucket:"podster-01",
+            Key:keyvalue
+        })
+        const signedurl = await getSignedUrl(S3,cmd);
+        if(signedurl){
+            res.json(signedurl);
+        }
+    }catch(e){
+        res.json(e);
+    }
+})
+
+app.post("/start-multipart",async(req,res)=>{
+    
+    let filename = req.body.filename;
+    let contentType = req.body.contentType;
+    const param = {
+        Bucket:"podster-01",
+        Key:filename,
+        contentType
+    }
+    try{
+        const multipart = new CreateMultipartUploadCommand(param)
+        const response = await S3.send(multipart);
+        res.json(response.UploadId); 
+    }catch(e){
+            console.log(e);
+        }
+    })
+
+app.post("/multipart-urls",async(req,res)=>{
+    const {filename,UploadId,PartNumber} = req.body;
+    const totalparts = Array.from({length:PartNumber}, (_,i)=>i+1);
+    try{
+        const urls =await Promise.all(
+            totalparts.map(async(PartNumber)=>{
+                const param = {
+                    Bucket:"podster-01",
+                    Key:filename,
+                    PartNumber:PartNumber,
+                    UploadId,
+                    Expires:"300*3"
+                }
+                const cmd = new UploadPartCommand(param)
+                return await getSignedUrl(S3,cmd)
+            })
+        )
+            res.json(urls);
+    }catch(e){
+        res.status(404).json("multipart-url error");
+        console.log(e)
+}
+})
+
+app.post("/complete-multipart",async(req,res)=>{
+    const {parts,UploadId,filename} = req.body;
+    const param = {
+        Bucket:"podster-01",
+        Key:filename,
+        UploadId,
+        MultipartUpload:{
+            Parts: parts.map((part:{ETag:string},index:number)=>({
+                ETag:part.ETag,
+                PartNumber:index+1
+            }))
+        }
+    }
+    try{
+        const cmd = new CompleteMultipartUploadCommand(param)
+        const response =await S3.send(cmd)
+        res.json(response)
+    }catch(e){
+        console.log(e);
+    }
 })
 
 app.listen(3003);

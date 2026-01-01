@@ -1,5 +1,8 @@
 import { Socket } from "socket.io";
-import type { user } from "./Usermanage.js";
+export interface user{
+    socket:Socket,
+    name:string,
+}
 
 let GlobalRoomId = 1
 
@@ -54,9 +57,6 @@ export class RoomManager {
 
     onAnswer(roomid:string, sdp :string){
         const user1 = this.Rooms.get(roomid)?.user1
-        console.log("user1"+user1);
-        console.log(this.Rooms)
-        console.log("roomid"+roomid)
         if(user1){
             user1.socket.emit("answer",{
                 sdp
@@ -77,6 +77,9 @@ export class RoomManager {
 
     onmessage({roomid,socket,msg}:{roomid:string,socket:Socket,msg:string}){
         const room = this.Rooms.get(roomid);
+        console.log("room found ?")
+        console.log(room)
+        console.log(this.Rooms);
         if(room){
             if(socket.id == room.user1.socket.id){
                 room.user2?.socket.emit("msg",msg);
@@ -90,23 +93,18 @@ export class RoomManager {
         this.Rooms.delete(roomid)
     }
 
-    onstartrec({roomid,socket}:{roomid:string,socket:Socket}){
+    record_response({roomid,socket,permission}:{roomid:string,socket:Socket,permission?:boolean}){
         const room = this.Rooms.get(roomid)
         if(room){
             const user = Object.values(room).find(u => u.id != socket.id)
             if (!user) return;
-            user.socket.emit("askstart");
+            if(permission){
+                user.socket.emit("record-response",{permission});
+            }else{
+                user.socket.emit("record-permission");
+            }
         }
-    }   
-
-    onconfirmtorecord({roomid,socket}:{roomid:string,socket:Socket}){
-        const room = this.Rooms.get(roomid)
-        if(room){
-            const user = Object.values(room).find(u => u.id != socket.id)
-            if (!user) return;
-            user.socket.emit("oktorec");
-        }
-    }   
+    } 
     
     generate(){
         return GlobalRoomId++;

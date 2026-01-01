@@ -7,13 +7,16 @@ export const Recording = (strean:MediaStream,room:string):{
     let recorder = new MediaRecorder(strean);
     const data = <Blob[]>([]); 
     const startrecording=()=>{
-        console.log("started recording")
         if(recorder){
             recorder.ondataavailable = recordchunks
             recorder.start()
-            }
         }
+    }
 
+    const recordchunks = (e:BlobEvent)=>{
+        data.push(e.data);
+    }
+    
     const stopRecording = ()=>{
         console.log("stoped recording")
         return new Promise<{videoBlob:Blob,videoUrl:string}>((resolve)=>{
@@ -21,17 +24,13 @@ export const Recording = (strean:MediaStream,room:string):{
         recorder.onstop = ()=>{
             const videoBlob = new Blob(data,{type:"video/webm"});
             const videoFile = new File([videoBlob], `${room}.webm`, { type: "video/webm" });
+            stop(videoFile);
             const videoUrl =URL.createObjectURL(videoBlob);
             resolve({videoUrl,videoBlob})
-            splitchunks(videoFile);
+            // splitchunks(videoFile);
             } 
         data.length = 0;
         })
-
-    }
-
-    const recordchunks = (e:BlobEvent)=>{
-        data.push(e.data);
     }
 
     const splitchunks = async(videoFile:File)=>{
@@ -52,6 +51,81 @@ export const Recording = (strean:MediaStream,room:string):{
             })
             console.log(response);
         }
+    }
+
+    const startmultipart =async ()=>{
+       const res  = await axios.post("http://localhost:3003/start-multipart",{
+        filename:"first",
+        contentType:"video/webm"
+       }) 
+       return res.data
+    }
+
+    const geturls = async(UploadId:String,totalchunks:number)=>{
+        const response = await axios.post("http://localhost:3003/multipart-urls",{
+            filename:"first",
+            PartNumber:totalchunks,
+            UploadId
+        })
+        return response.data
+    } 
+
+    const splited_chunks = async(videoFile:File)=>{
+        const chunksize = 10 * 1024 * 1024;
+        const totalchunks = Math.ceil(videoFile.size/chunksize);
+        const chunks:Blob[] =  Array.from({length:totalchunks},(_,i)=>{
+           return videoFile.slice(i*chunksize,(i+1)*chunksize);
+        })
+        return chunks
+    }
+
+    const uploadingchunks =async (chunks:Blob[],urls:String[])=>{
+        if (Array.isArray(urls)){
+        const uploadPromises:Promise<any>[]= []
+        const serialchunks = chunks.reverse()
+          for (let i = 0; i < urls.length; i++){
+            const chunk = serialchunks.pop();
+            const url = urls[i];
+                if(typeof url ===  "string"){
+                    uploadPromises.push(
+                     axios.put(url,chunk,{
+                        headers: {
+                            "Content-Type": "video/webm",
+                        },
+                    }))
+                }
+            }
+        const uploadresponses : any = await Promise.all(uploadPromises)
+        console.log(uploadresponses);
+        return uploadresponses.headers.etag
+        }
+    }
+
+    const completeupload =async (etags:String[],uploadId:String)=>{
+        const parts : any = []
+        etags.forEach((x,i)=>{
+            parts.push({
+                etag:x,
+                PartNumber:i
+            })
+        })
+
+        const response = await axios.post("http://localhost:3003/complete-multipart",{
+            fileName: "first",
+            uploadId: uploadId,
+            parts: parts,
+        })
+    }
+
+    const stop=async(videoFile:File)=>{
+        const chunksize = 10 * 1024 * 1024;
+        const totalchunks = Math.ceil(videoFile.size/chunksize);
+        const UploadId =await startmultipart()
+        const urls = await geturls(UploadId,totalchunks)
+        const chunks:Blob[] = await splited_chunks(videoFile);
+        const etags =await uploadingchunks(chunks,urls)
+        completeupload(etags,UploadId);
+
     }
 
     return {startrecording,stopRecording}

@@ -34,33 +34,28 @@ export class User {
 
     initHandler(socket:Socket){
         socket.on("msg",({roomid,msg})=>{
+            console.log(roomid)
             this.roomhandler.onmessage({roomid,socket,msg});
         })
-
         socket.on("offer",({roomid,sdp}:{roomid:string,sdp:string})=>{
             this.roomhandler.onOffer(roomid,sdp);
         })
         socket.on("answer",({roomid,sdp}:{roomid:string,sdp:string})=>{
             this.roomhandler.onAnswer(roomid,sdp);
         })
-
         socket.on("new-ice-candidate",({roomid,candidate}:{roomid:string,candidate:RTCIceCandidate})=>{
             this.roomhandler.onIceCandidate({roomid,candidate,socket});
         })
-
-        socket.on("startrec",({roomid,socket}:{roomid:string,socket:Socket})=>{
-            this.roomhandler.onstartrec({roomid,socket})
+        socket.on("request-permission",({roomid,socket}:{roomid:string,socket:Socket})=>{
+            this.roomhandler.record_response({roomid,socket})
         })
-
-        socket.on("oktorec",({roomid,socket}:{roomid:string,socket:Socket})=>{
-            this.roomhandler.onconfirmtorecord({roomid,socket})
+        socket.on("permission-response",({roomid,socket,permission}:{roomid:string,socket:Socket,permission:boolean})=>{
+            this.roomhandler.record_response({roomid,socket,permission})
         })
-
         socket.on("hangup",async ({roomid}:{roomid:string})=>{
             await this.removeuser(socket.id)
             socket.emit("room-closed")
         })
     }
-
 
 }

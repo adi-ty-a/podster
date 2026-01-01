@@ -136,6 +136,4 @@ export class rtc{
         this.socket.emit(msg.type
             ,msg)
     }
-
-
 }
