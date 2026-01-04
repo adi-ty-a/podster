@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { rtc } from "./webrtc_Logic";
-import { SetStateAction } from "react";
+
 interface chats{
         user:"user1"|"user2",
         msg:string,
@@ -13,6 +13,9 @@ export class webrtcmanager{
     private currtc:rtc|undefined;
     private roomid:string|undefined;
     public chats:chats[] =[]
+    public callback?:(data:boolean)=>void;
+    public callend?:()=>void;
+
     constructor(){
         this.server = io("http://localhost:3001");
     }
@@ -37,7 +40,8 @@ export class webrtcmanager{
             this.server.on("Offer",(msg) =>  this.currtc?.handleVideoOfferMsg(msg));
             this.server.on("answer",(msg) => this.currtc?.handleVideoAnswerMsg(msg));
             this.server.on("new-ice-candidate",(msg) => this.currtc?.handleNewICECandidateMsg(msg));
-        }
+            this.server.on("record-permission",()=> this.callback?.(true))
+        };
     }
 
     async getmeida(){
@@ -101,11 +105,26 @@ export class webrtcmanager{
     record_permission():Promise<any>{
         return new Promise((resolve)=>{
         if(this.roomid)
-        this.server.emit("request-permission",this.roomid);
-        this.server.on("record-permission",(msg)=>{
+        this.server.emit("request-permission",{roomid :this.roomid});
+        this.server.on("record-response",(msg)=>{
             resolve(msg);
         })
         })
+    }
 
+    permissionResponse(permission:boolean){
+        this.server.emit("permission-response",{roomid :this.roomid,permission:permission})
+    }
+
+    setcallback(callback?:(msg:boolean)=>void,videoStop?:()=>void){
+        console.log(videoStop);
+        console.log("stop callback")
+        this.callback = callback;
+        this.callend = videoStop
+    }
+
+    endrecording(){
+        this.server.emit("end_recording",{roomid:this.roomid});
+        this.server.on("end_recording",()=>this.callend?.());
     }
 }

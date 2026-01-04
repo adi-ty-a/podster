@@ -1,14 +1,14 @@
+"use client"
 import { Circle, Mic, Pause, Phone, Video } from "lucide-react"
 import { webrtcmanager } from "../webrtc/rtcmanager"
-import { RefObject } from "react"
-import { Recording } from "./recording"
+import { RefObject, useEffect } from "react"
+import { Recording } from "../webrtc/recording"
 type ControlBarData = {data:{
     manager: webrtcmanager | null;
     localvid: RefObject<HTMLVideoElement|null>;
     recorderref: RefObject<ReturnType<typeof Recording> | null>;
 }
 };
-
 const cv= {button: "py-4 rounded-full bg-white text-white border border-gray-200 px-6 "}
 
 export const ControlBar=({data}:ControlBarData)=>{
@@ -27,17 +27,25 @@ export const ControlBar=({data}:ControlBarData)=>{
       manager?.hangup()
     }
 
+    // starts recording after the response is yes
     const startvideo=async()=>{
       if(manager){
         const response = await manager.record_permission();
         if(response){
           recorderref.current?.startrecording();
+        console.log(recorderref);
+        }
+
+        else{
+
         }
       }
     }
-    
+
     const videoStop=async()=>{
       if(!recorderref.current) return 
+      if(manager)
+      manager.endrecording();
       const {videoUrl, videoBlob} = await recorderref.current?.stopRecording()
       window.open(videoUrl)
     }

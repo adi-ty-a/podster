@@ -7,9 +7,11 @@ export const Recording = (strean:MediaStream,room:string):{
     let recorder = new MediaRecorder(strean);
     const data = <Blob[]>([]); 
     const startrecording=()=>{
+         console.log("starts recording")
         if(recorder){
             recorder.ondataavailable = recordchunks
             recorder.start()
+            console.log("started recording")
         }
     }
 
@@ -24,8 +26,9 @@ export const Recording = (strean:MediaStream,room:string):{
         recorder.onstop = ()=>{
             const videoBlob = new Blob(data,{type:"video/webm"});
             const videoFile = new File([videoBlob], `${room}.webm`, { type: "video/webm" });
-            stop(videoFile);
+            // stop(videoFile);
             const videoUrl =URL.createObjectURL(videoBlob);
+            console.log(" recording pushed")
             resolve({videoUrl,videoBlob})
             // splitchunks(videoFile);
             } 
@@ -52,7 +55,7 @@ export const Recording = (strean:MediaStream,room:string):{
             console.log(response);
         }
     }
-
+    //start the process
     const startmultipart =async ()=>{
        const res  = await axios.post("http://localhost:3003/start-multipart",{
         filename:"first",
@@ -60,7 +63,7 @@ export const Recording = (strean:MediaStream,room:string):{
        }) 
        return res.data
     }
-
+    // gets the parsedurls for upload
     const geturls = async(UploadId:String,totalchunks:number)=>{
         const response = await axios.post("http://localhost:3003/multipart-urls",{
             filename:"first",
@@ -69,7 +72,7 @@ export const Recording = (strean:MediaStream,room:string):{
         })
         return response.data
     } 
-
+    //creates equal chunks of video
     const splited_chunks = async(videoFile:File)=>{
         const chunksize = 10 * 1024 * 1024;
         const totalchunks = Math.ceil(videoFile.size/chunksize);
@@ -97,11 +100,11 @@ export const Recording = (strean:MediaStream,room:string):{
             }
         const uploadresponses : any = await Promise.all(uploadPromises)
         console.log(uploadresponses);
-        return uploadresponses.headers.etag
+        return uploadresponses.map((e:any)=>e.headers.etag); 
         }
     }
 
-    const completeupload =async (etags:String[],uploadId:String)=>{
+    const completeupload = async (etags:String[],uploadId:String)=>{
         const parts : any = []
         etags.forEach((x,i)=>{
             parts.push({
@@ -115,6 +118,7 @@ export const Recording = (strean:MediaStream,room:string):{
             uploadId: uploadId,
             parts: parts,
         })
+        console.log(response);
     }
 
     const stop=async(videoFile:File)=>{
@@ -125,7 +129,6 @@ export const Recording = (strean:MediaStream,room:string):{
         const chunks:Blob[] = await splited_chunks(videoFile);
         const etags =await uploadingchunks(chunks,urls)
         completeupload(etags,UploadId);
-
     }
 
     return {startrecording,stopRecording}

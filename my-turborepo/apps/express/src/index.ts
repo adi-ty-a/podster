@@ -3,15 +3,17 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { upload } from "./multer.js";
 import { mergeChunks } from "./merge.js";
 import {S3Client,PutObjectCommand, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand} from "@aws-sdk/client-s3"
-
+import 'dotenv/config'
 const app = express();
-
 app.use(express.json())
+if (!process.env.S3_SECRET_ID || !process.env.S3_SECRET_KEY) {
+  throw new Error("AWS credentials missing");
+}
     const S3 = new S3Client({
             region:"ap-south-1",
             credentials:{
-                accessKeyId:"REMOVED",
-                secretAccessKey:"REMOVED"
+                accessKeyId:process.env.S3_SECRET_ID,
+                secretAccessKey:process.env.S3_SECRET_KEY
             }
         })
 
@@ -61,7 +63,7 @@ app.post("/start-multipart",async(req,res)=>{
     const param = {
         Bucket:"podster-01",
         Key:filename,
-        contentType
+        ContentType: contentType
     }
     try{
         const multipart = new CreateMultipartUploadCommand(param)

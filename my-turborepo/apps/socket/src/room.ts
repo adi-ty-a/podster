@@ -93,16 +93,33 @@ export class RoomManager {
         this.Rooms.delete(roomid)
     }
 
-    record_response({roomid,socket,permission}:{roomid:string,socket:Socket,permission?:boolean}){
+    requestingPermission({roomid,socket}:{roomid:string,socket:Socket}){
         const room = this.Rooms.get(roomid)
         if(room){
-            const user = Object.values(room).find(u => u.id != socket.id)
+            const user = Object.values(room).find(u => u.socket.id != socket.id)
             if (!user) return;
-            if(permission){
-                user.socket.emit("record-response",{permission});
-            }else{
                 user.socket.emit("record-permission");
-            }
+
+        }
+    }
+
+    record_response({roomid,socket,permission}:{roomid:string,socket:Socket,permission:boolean}){
+        const room = this.Rooms.get(roomid)
+        console.log(socket.id);
+        if(room){
+            const user = Object.values(room).find(u => u.socket.id != socket.id)
+            if (!user) return;
+                user.socket.emit("record-response",{permission});
+        }
+    } 
+
+    endcall({roomid,socket}:{roomid:string,socket:Socket}){
+        const room = this.Rooms.get(roomid)
+        console.log(socket.id);
+        if(room){
+            const user = Object.values(room).find(u => u.socket.id != socket.id)
+            if (!user) return;
+                user.socket.emit("end_recording");
         }
     } 
     
