@@ -7,16 +7,17 @@ import { rtcengine } from "../../webrtc/connectionlogic";
 import { webrtcmanager } from "../../webrtc/rtcmanager";
 import { ControlBar } from "@/app/components/ControlBar";
 import { Header } from "@/app/components/Header";
- 
+import { AnimatePresence, motion } from "motion/react"
+
 export default function Room() {
   const param = useParams ();
   const room = param.roomid;
-    const recorderref = useRef<ReturnType<typeof Recording> | null>(null);
-    const localvid = useRef<HTMLVideoElement | null>(null)
-    const [localmedia,setlocalmedia] = useState<MediaStream|null>(null)
-    const [roomid,setroomid] = useState<string|null>(null);
-    const [manager,setmanager] = useState<webrtcmanager|null>(null)
-    const [reqcall,setreqcall] = useState(false);
+  const recorderref = useRef<ReturnType<typeof Recording> | null>(null);
+  const localvid = useRef<HTMLVideoElement | null>(null);
+  const [localmedia,setlocalmedia] = useState<MediaStream|null>(null);
+  const [roomid,setroomid] = useState<string|null>(null);
+  const [manager,setmanager] = useState<webrtcmanager|null>(null);
+  const [reqcall,setreqcall] = useState(false);
 
     useEffect(()=>{
         if(!roomid && room &&  typeof room == "string") {
@@ -41,7 +42,6 @@ export default function Room() {
             }
         }
         fetchmedia()
-        return manager?.setcallback(undefined)
     },[manager])
 
     useEffect(()=>{
@@ -58,8 +58,9 @@ export default function Room() {
     }
     
     const videoStop=async()=>{
+      console.log("reached here")
       if(!recorderref.current) return 
-      const {videoUrl, videoBlob} = await recorderref.current?.stopRecording()
+      const {videoUrl} = await recorderref.current?.stopRecording()
       window.open(videoUrl)
     }
 
@@ -74,7 +75,25 @@ export default function Room() {
         {/* < div className=" absolute top-2 left-1/2 transform -translate-x-1/2 w-[250px] h-[55px] border rounded-md bg-white border-black/30 flex px-4 items-center">
         Request sent to record
         </div> */}
-        {reqcall && < div className="z-2 absolute top-2 left-1/2 transform -translate-x-1/2 w-[250px] h-fit  border rounded-md bg-white border-black/30 flex px-4 py-3 items-center flex-col gap-4">
+        <AnimatePresence>
+        {reqcall &&
+        < motion.div 
+        initial={{
+          y:-100,
+          opacity:0
+         }}
+         animate={{
+          y:0,
+          opacity:100
+         }}
+         exit={{
+          y:-100,
+          opacity:0
+         }}
+         transition={{
+          duration:.4
+         }}
+        className="z-2 absolute top-2 left-1/2 transform -translate-x-1/2 w-[250px] h-fit  border rounded-md bg-white border-black/30 flex px-4 py-3 items-center flex-col gap-4">
          Host wants to record the Podcast. Do you want to ?
          <div className="w-full flex justify-end gap-2">
          <button
@@ -87,10 +106,13 @@ export default function Room() {
          onClick={()=>{
           manager?.permissionResponse(true);
           triggerRecord();
+          setreqcall(false);
          }}
          className="bg-gray-300 px-3 py-1 rounded-[3px]">yes</button>
          </div>
-        </div>}
+        </motion.div>
+        }
+        </AnimatePresence>
         <Header tittle="Podster" size="lg"/>
         <div className="w-full h-full bg-[#f7f7f7] flex">
         <div className="flex flex-col ">

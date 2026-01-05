@@ -122,12 +122,10 @@ export class rtc{
             this.pc.ontrack = null
             this.pc.onicecandidate = null
             this.pc.onnegotiationneeded= null
-            
             const senderlist = this.pc.getSenders()
             senderlist.forEach((e)=>{
                 e.track?.stop()
             })
-            
             this.pc.close()
             console.log("closed webrtc")
         }

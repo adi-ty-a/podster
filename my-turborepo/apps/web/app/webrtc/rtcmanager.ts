@@ -41,6 +41,9 @@ export class webrtcmanager{
             this.server.on("answer",(msg) => this.currtc?.handleVideoAnswerMsg(msg));
             this.server.on("new-ice-candidate",(msg) => this.currtc?.handleNewICECandidateMsg(msg));
             this.server.on("record-permission",()=> this.callback?.(true))
+            this.server.on("end_recording",()=>{
+                this.hangup();
+                this.callend?.()});
         };
     }
 
@@ -84,6 +87,7 @@ export class webrtcmanager{
         if(this.currtc){
             this.currtc.hangupcall()
         }
+        this.server.removeAllListeners()
         this.server.close()
         this.roomid = "none"
     }
@@ -118,13 +122,12 @@ export class webrtcmanager{
 
     setcallback(callback?:(msg:boolean)=>void,videoStop?:()=>void){
         console.log(videoStop);
-        console.log("stop callback")
+        console.log(callback);
         this.callback = callback;
         this.callend = videoStop
     }
 
     endrecording(){
         this.server.emit("end_recording",{roomid:this.roomid});
-        this.server.on("end_recording",()=>this.callend?.());
     }
 }
