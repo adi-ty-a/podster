@@ -1,5 +1,6 @@
 import { Video } from "lucide-react";
 import { Plus } from "lucide-react";
+import { animate, motion } from "motion/react"
 const vairants={
     create:{
         title:"Start New Call",
@@ -12,11 +13,18 @@ const vairants={
         style:"border bg-[#FAFAFA]"
     }
 }
-export const Quickactions = ({variant,}: {variant: keyof typeof vairants;}) => {
+export const Quickactions = ({variant,onclick}: {variant: keyof typeof vairants,onclick?:()=>void}) => {
   const data = vairants[variant];
 
   return (
-    <div className="ml-10 mt-6 rounded-xl border px-6 py-4 flex gap-4 min-w-[500px] w-full">
+    <motion.div 
+      whileHover={{
+        scale:1.1,
+        transition: { duration: 0.1 }
+      }}
+      transition={{duration:.5}}
+      onClick={onclick}
+      className="ml-10 mt-6 rounded-xl border px-6 py-4 flex gap-4 min-w-[500px] w-full">
       <div className={`rounded-lg p-2 w-[50px] h-[50px] ${data.style} flex items-center justify-center`}>
         {variant=="create" ?<Video color="white"/> :<Plus color="black"/>}
       </div>
@@ -24,6 +32,6 @@ export const Quickactions = ({variant,}: {variant: keyof typeof vairants;}) => {
         <p className="font-semibold text-[18px]">{data.title}</p>
         <p className="text-[16px] text-black/80">{data.dis}</p>
       </div>
-    </div>
+    </motion.div>
   );
 };

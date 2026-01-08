@@ -13,10 +13,11 @@ export class rtc{
     public roomid!: string
     private initaotr!:boolean
     private track : MediaStream
-
-    constructor( track:MediaStream,socket:Socket){
+    private onRemoteStream?:(stream:MediaStream)=>void;
+    constructor( track:MediaStream,socket:Socket,onRemoteStream:(stream:MediaStream)=>void){
         this.socket = socket
         this.track = track
+        this.onRemoteStream = onRemoteStream;
     }
 
     async createPeerConnection(initaotr:boolean,roomid?:string ){
@@ -48,11 +49,14 @@ export class rtc{
 
     handletrack(event:any)  {
             const remoteStream =  event.streams[event.streams.length - 1];
-            const remoteVideo = document.querySelector("video#remote") as HTMLVideoElement;
-            if(remoteVideo){
-                remoteVideo.srcObject=remoteStream
+            // const remoteVideo = document.querySelector("video#remote") as HTMLVideoElement;
+            // if(remoteVideo){
+            //     remoteVideo.srcObject=remoteStream
+            // }
+            if(this.onRemoteStream){
+                this.onRemoteStream(remoteStream);
             }
-        remoteStream.onremovetrack  = this.handleRemoveTrackEvent.bind(this);
+            remoteStream.onremovetrack  = this.handleRemoveTrackEvent.bind(this);
     }
 
     handleRemoveTrackEvent(event:any){
@@ -103,7 +107,6 @@ export class rtc{
 
      handleNewICECandidateMsg(msg: any){
         if(!this.pc){
-            console.log("pc is not defined yet")
         }
         const candidate =  new RTCIceCandidate(msg.candidate);
         this.pc.addIceCandidate(candidate)
@@ -111,7 +114,6 @@ export class rtc{
 
     hangupcall(){
         this.closeVideoCall()
-        console.log("hangup")
         this.sendToServer({
             type:"hangup",
         })
@@ -127,7 +129,6 @@ export class rtc{
                 e.track?.stop()
             })
             this.pc.close()
-            console.log("closed webrtc")
         }
     }
     sendToServer(msg :any){

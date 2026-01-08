@@ -7,19 +7,25 @@ import { rtcengine } from "../../webrtc/connectionlogic";
 import { webrtcmanager } from "../../webrtc/rtcmanager";
 import { ControlBar } from "@/app/components/ControlBar";
 import { Header } from "@/app/components/Header";
-import { AnimatePresence, motion } from "motion/react"
+import { AnimatePresence, motion, scale } from "motion/react"
+import PersonIcon from '@mui/icons-material/Person';
 
 export default function Room() {
   const param = useParams ();
   const room = param.roomid;
   const recorderref = useRef<ReturnType<typeof Recording> | null>(null);
   const localvid = useRef<HTMLVideoElement | null>(null);
+  const remotevid = useRef<HTMLVideoElement | null>(null);
   const [localmedia,setlocalmedia] = useState<MediaStream|null>(null);
   const [roomid,setroomid] = useState<string|null>(null);
   const [manager,setmanager] = useState<webrtcmanager|null>(null);
   const [reqcall,setreqcall] = useState(false);
-
-    useEffect(()=>{
+  const [userconnected,setuserconnected] = useState(false);
+  const [remoteStream,setRemoteStream] = useState<MediaStream>()
+  const [isRemoteVideoEnabled,setisRemoteVideoEnabled] = useState(true);
+  const [islocalVideoEnabled,setisLocalVideoEnabled] = useState(true);
+  // const []
+  useEffect(()=>{
         if(!roomid && room &&  typeof room == "string") {
             setroomid(room)       
         }
@@ -28,6 +34,9 @@ export default function Room() {
     useEffect(()=>{
       if(!roomid)return
       setmanager(()=>rtcengine());
+      return ()=>{
+        manager?.hangup
+      }
     },[roomid])
 
     useEffect(()=>{
@@ -37,8 +46,8 @@ export default function Room() {
             if(MediaStream && localvid.current && roomid){
                 setlocalmedia(MediaStream);
                 localvid.current.srcObject = MediaStream;
+                manager?.setcallback(setcallback,videoStop,setuserconnected,Remotestream,setisRemoteVideoEnabled,setisLocalVideoEnabled);
                 manager?.joinroom(roomid);
-                manager?.setcallback(setcallback,videoStop);
             }
         }
         fetchmedia()
@@ -53,13 +62,20 @@ export default function Room() {
         rec();
     },[localmedia])
 
+    useEffect(()=>{
+      if(remoteStream && remotevid.current){
+        remotevid.current.srcObject=remoteStream
+      }
+    },[remoteStream])
+    
+
     const setcallback=(data:boolean)=>{
       setreqcall(data)
     }
-    
+
+
     const videoStop=async()=>{
-      console.log("reached here")
-      if(!recorderref.current) return 
+      if(!recorderref.current)  return console.log("ruk gya") 
       const {videoUrl} = await recorderref.current?.stopRecording()
       window.open(videoUrl)
     }
@@ -67,6 +83,54 @@ export default function Room() {
    // starst recording , after clicking yes 
     const triggerRecord=()=>{
       recorderref.current?.startrecording()
+    }
+
+    function Remotestream(media:MediaStream){
+      setRemoteStream(media)
+    }
+    
+
+    const renderRemoteVideo = () => {
+        if (!userconnected) {
+          return "User not connected...";
+        }
+
+        if (!isRemoteVideoEnabled) {
+          return (
+            <div className=" relative h-full w-full flex items-center justify-center">
+                    <video  className="w-full h-full object-cover" autoPlay ref={remotevid} id="remote" ></video>
+                    <div className="absolute w-full h-full flex items-center justify-center bg-white">
+                      <div className="w-fit h-fit rounded-full bg-[#F2F2F2] p-5  shadow-[0_3px_5px_rgb(0,0,0,0.1)]">
+                        <PersonIcon style={{color:"black",fontSize: "200px" }}/>
+                      </div>
+                      </div>
+                  </div>
+                );     
+              };
+        return (
+                <div className=" relative h-full w-full flex items-center justify-center">
+                  <video  className="w-full h-full object-cover" autoPlay ref={remotevid} id="remote" ></video>
+                </div>
+            );
+        }
+
+        
+
+    const renderLocalvideeo=()=>{
+      if(!islocalVideoEnabled){
+        return <div className=" relative h-full w-full flex items-center justify-center border border-black/10 ">
+                          <video  className="w-full h-full object-cover shadow-[0_3px_5px_rgb(0,0,0,0.1)]" autoPlay ref={remotevid} id="remote" ></video>
+                          <div className="absolute w-full h-full flex items-center justify-center bg-white shadow-[0_3px_15px_rgb(0,0,0,0.8)]">
+                            <div className="w-fit h-fit rounded-full bg-[#F2F2F2] p-5  shadow-[0_3px_5px_rgb(0,0,0,0.1)]">
+                              <PersonIcon style={{color:"black",fontSize: "80px" }}/>
+                            </div>
+                            </div>
+                        </div> 
+      }
+        return <div className=" relative h-full w-full flex items-center justify-center">
+           <video  className="w-full h-full object-cover" autoPlay ref={localvid} ></video>
+          </div>
+      
     }
 
   return (
@@ -115,20 +179,24 @@ export default function Room() {
         </AnimatePresence>
         <Header tittle="Podster" size="lg"/>
         <div className="w-full h-full bg-[#f7f7f7] flex">
-        <div className="flex flex-col ">
-          <div className="relative  min-w-[75%] h-full flex pt-10 justify-center gap-8 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-            <div className="bg-white w-[45%] h-[70%] rounded-xl overflow-hidden">
-              <video className="w-full h-full rounded-md" autoPlay ref={localvid}></video>
+        <div className="flex flex-col  h-full flex-1">
+          <div className="relative  min-w-[75%] h-full flex py-5 justify-center gap-8 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+            <div  className="relative bg-white aspect-video h-[100%] rounded-xl overflow-hidden flex items-center justify-center ">
+              {/* <div className="h-full w-full flex items-center justify-center"><div className="w-fit h-fit rounded-full bg-[#F2F2F2] p-5  shadow-[0_3px_5px_rgb(0,0,0,0.1)]"><PersonIcon style={{color:"black",fontSize: "200px" }}/></div></div> */}
+                {/* {!userconnected ? "User not connected..." : <video  className="w-full h-full object-cover" autoPlay ref={remotevid} id="remote" ></video>} */}
+              {renderRemoteVideo()}
+            <div className="z-3 absolute bottom-2 right-2 bg-white aspect-video h-[30%] rounded-xl overflow-hidden">
+              {/* <video  className="w-full h-full object-cover" autoPlay ref={localvid} ></video> */}
+              {renderLocalvideeo()}
             </div>
-            <div className="bg-white w-[45%] h-[70%] rounded-xl overflow-hidden">
-              <video className="w-full h-full" autoPlay id="remote"></video>
             </div>
           </div>
           <div>
-          <ControlBar data={{manager,localvid,recorderref}}/>
+            { userconnected && <ControlBar data={{manager,localvid,recorderref}}/>
+            }
           </div>
         </div>
-        <Chatbox/>
+        {userconnected && <Chatbox/> }
         </div>
       </div>
     </>

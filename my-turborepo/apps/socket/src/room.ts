@@ -113,7 +113,7 @@ export class RoomManager {
         }
     } 
 
-    endcall({roomid,socket}:{roomid:string,socket:Socket}){
+    endrecording({roomid,socket}:{roomid:string,socket:Socket}){
         const room = this.Rooms.get(roomid)
         console.log(socket.id);
         if(room){
@@ -122,7 +122,30 @@ export class RoomManager {
                 user.socket.emit("end_recording");
         }
     } 
-    
+    endcall({roomid,socket}:{roomid:string,socket:Socket}){
+        const room = this.Rooms.get(roomid)
+        if(room){
+            const user = Object.values(room).find(u => u.socket.id != socket.id)
+            if (user){
+                return user.socket.emit("hangup");
+                }else{
+                     return socket.emit("no user in room or no room found");
+                 }
+        }
+    }
+
+    handlevideostate({socket,roomid,state}:{socket:Socket,roomid:string,state:boolean}){
+        const room = this.Rooms.get(roomid);
+        if(!room) return 
+        const user = Object.values(room).find((s)=> s.socket.id != socket.id)
+        if(user){
+            user.socket.emit("video-state",{state});
+        }else{
+            socket.emit("no user found")
+        }
+
+    }   
+
     generate(){
         return GlobalRoomId++;
     }

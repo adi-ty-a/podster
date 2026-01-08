@@ -8,15 +8,22 @@ import { Header } from "../components/Header"
 import { Quickactions } from "../components/Quickactions"
 import { Quickinfo } from "../components/Quickinfo"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { v4 as uuid } from "uuid";
 export default function Dashboard(){
+    const router =  useRouter()
 
- const [navselection,setnavselection] = useState<string>("Recordings");
+    const [navselection,setnavselection] = useState<string>("Recordings");
     const togglebutton=()=>{
         if(navselection == "Recordings"){
             setnavselection("Chats")
         }else{
             setnavselection("Recordings")
         }
+    }
+    const createroom =()=>{
+            const roomid = uuid();
+            router.push("/room/"+roomid)
     }
     
 return <>
@@ -28,7 +35,7 @@ return <>
                         <img
                         src="/logoimg.jpg"
                         alt="Logo"
-                        className=" size-[80px]  object-cover object-center"
+                        className="size-[80px]  object-cover object-center"
                         />
                     </div>
                         <div className=" absolute left-10 size-[15px] rounded-full bg-black animate-pulse"></div>
@@ -46,7 +53,7 @@ return <>
             <Header tittle="Dashboard" size="sm"/>
             <div className="font-semibold text-lg ml-10 mt-6">Quick Actions</div>
             <div className="flex w-[80%] pr-12">
-            <Quickactions variant="create" />
+            <Quickactions variant="create" onclick={createroom}  />
             <Quickactions variant="join" />
             </div>
             <div className="flex w-[90%] pr-12">

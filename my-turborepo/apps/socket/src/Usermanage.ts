@@ -24,11 +24,13 @@ export class User {
 
     createroom(socket:Socket){
         const roomid =  this.roomhandler.createRooms({socket,name:"user1"});
+        socket.data.roomid = roomid;
         socket.emit("roomid",roomid,"user1");
     }
 
     joinroom(socket:Socket,roomid:string){
         const res = this.roomhandler.joinroom(roomid,{socket,name:"user2"});
+        socket.data.roomid = roomid;
         socket.emit("joined",res)
     }
 
@@ -36,6 +38,11 @@ export class User {
         socket.on("msg",({roomid,msg})=>{
             console.log(roomid)
             this.roomhandler.onmessage({roomid,socket,msg});
+        })
+
+        socket.on("video-state",({state}:{state:boolean})=>{
+            const roomid =socket.data.roomid
+            this.roomhandler.handlevideostate({socket,state,roomid});
         })
         socket.on("offer",({roomid,sdp}:{roomid:string,sdp:string})=>{
             this.roomhandler.onOffer(roomid,sdp);
@@ -53,12 +60,22 @@ export class User {
             this.roomhandler.record_response({roomid,socket,permission})
         })
         socket.on("end_recording",({roomid}:{roomid:string})=>{
-            this.roomhandler.endcall({roomid,socket});
+            this.roomhandler.endrecording({roomid,socket});
         })
 
         socket.on("hangup",async ({roomid}:{roomid:string})=>{
             await this.removeuser(socket.id)
+            this.roomhandler.endcall({roomid,socket});
             socket.emit("room-closed")
+        })
+
+        socket.on("disconnect",(reason)=>{
+            console.log(reason);
+            this.removeuser(socket.id)
+            const roomid = socket.data.roomid
+            if(roomid){
+                this.roomhandler.endcall({roomid,socket});
+            }
         })
     }
 

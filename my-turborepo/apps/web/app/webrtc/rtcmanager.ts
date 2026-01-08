@@ -1,5 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { rtc } from "./webrtc_Logic";
+import { Dispatch, SetStateAction } from "react";
 
 interface chats{
         user:"user1"|"user2",
@@ -15,13 +16,16 @@ export class webrtcmanager{
     public chats:chats[] =[]
     public callback?:(data:boolean)=>void;
     public callend?:()=>void;
-
+    private setRemoteStream ?:(media:MediaStream)=>void;
+    public setuserconnected?:Dispatch<SetStateAction<boolean>>;
+    public setisRemoteVideoEnabled?:Dispatch<SetStateAction<boolean>>;
+    public setisLocalVideoEnabled?:Dispatch<SetStateAction<boolean>>;
     constructor(){
         this.server = io("http://localhost:3001");
     }
 
     Connect(tracks:MediaStream,action:"join"|"create",roomid?:string){
-        this.currtc = new rtc(tracks,this.server)
+        this.currtc = new rtc(tracks,this.server,this.setRemoteStream!)
         this.setuplistners();
         if(roomid  && roomid != "none" && this.currtc){ this.currtc.roomid = roomid}
         if(action == "create"  && roomid != "none"){
@@ -35,16 +39,23 @@ export class webrtcmanager{
         if(this.currtc != undefined){
             this.server.on("room-closed",()=>this.closeroom())
             this.server.on("roomid",(roomid)=>{if(this.currtc)this.currtc.roomid = roomid})
-            this.server.on("send-offer",(data)=> {console.log("offer call") 
-            this.currtc?.createPeerConnection(true,data.roomid)});
-            this.server.on("Offer",(msg) =>  this.currtc?.handleVideoOfferMsg(msg));
+            this.server.on("send-offer",(data)=> {
+                this.setuserconnected?.(true);    
+                this.currtc?.createPeerConnection(true,data.roomid)});
+            this.server.on("Offer",(msg) =>{
+                this.setuserconnected?.(true);  
+                this.currtc?.handleVideoOfferMsg(msg)});
             this.server.on("answer",(msg) => this.currtc?.handleVideoAnswerMsg(msg));
             this.server.on("new-ice-candidate",(msg) => this.currtc?.handleNewICECandidateMsg(msg));
             this.server.on("record-permission",()=> this.callback?.(true))
             this.server.on("end_recording",()=>{
-                this.hangup();
                 this.callend?.()});
-        };
+            };
+            this.server.on("video-state",({state})=>{
+                console.log(state);
+                this.setisRemoteVideoEnabled?.(state)})
+            this.server.on("hangup",()=>{
+                this.hangup()})
     }
 
     async getmeida(){
@@ -55,9 +66,11 @@ export class webrtcmanager{
     }
 
     togglevideo = () => {
-        if(this.localstream){
-                this.localstream?.getVideoTracks().forEach((e)=>{
+        if(this.localstream && this.server){
+            this.localstream?.getVideoTracks().forEach((e)=>{
                 e.enabled = !e.enabled
+                this.server.emit("video-state",{state:e.enabled})
+                this.setisLocalVideoEnabled?.(e.enabled);
             })
         }
     };
@@ -87,6 +100,7 @@ export class webrtcmanager{
         if(this.currtc){
             this.currtc.hangupcall()
         }
+        this.setuserconnected?.(false);
         this.server.removeAllListeners()
         this.server.close()
         this.roomid = "none"
@@ -120,11 +134,13 @@ export class webrtcmanager{
         this.server.emit("permission-response",{roomid :this.roomid,permission:permission})
     }
 
-    setcallback(callback?:(msg:boolean)=>void,videoStop?:()=>void){
-        console.log(videoStop);
-        console.log(callback);
+    setcallback(callback?:(msg:boolean)=>void,videoStop?:()=>void,setuserconnected?:Dispatch<SetStateAction<boolean>>,setRemoteStream?:(media:MediaStream)=>void,setisRemoteVideoEnabled?:Dispatch<SetStateAction<boolean>>,setisLocalVideoEnabled?:Dispatch<SetStateAction<boolean>>){
         this.callback = callback;
-        this.callend = videoStop
+        this.callend = videoStop;
+        this.setuserconnected = setuserconnected;
+        this.setRemoteStream = setRemoteStream;
+        this.setisRemoteVideoEnabled = setisRemoteVideoEnabled;
+        this.setisLocalVideoEnabled = setisLocalVideoEnabled;
     }
 
     endrecording(){
