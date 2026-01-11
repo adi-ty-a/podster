@@ -136,9 +136,6 @@ export default function Room() {
   return (
     <>
       <div className="relative w-screen h-screen bg-white flex flex-col ">    
-        {/* < div className=" absolute top-2 left-1/2 transform -translate-x-1/2 w-[250px] h-[55px] border rounded-md bg-white border-black/30 flex px-4 items-center">
-        Request sent to record
-        </div> */}
         <AnimatePresence>
         {reqcall &&
         < motion.div 
@@ -182,11 +179,8 @@ export default function Room() {
         <div className="flex flex-col  h-full flex-1">
           <div className="relative  min-w-[75%] h-full flex py-5 justify-center gap-8 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
             <div  className="relative bg-white aspect-video h-[100%] rounded-xl overflow-hidden flex items-center justify-center ">
-              {/* <div className="h-full w-full flex items-center justify-center"><div className="w-fit h-fit rounded-full bg-[#F2F2F2] p-5  shadow-[0_3px_5px_rgb(0,0,0,0.1)]"><PersonIcon style={{color:"black",fontSize: "200px" }}/></div></div> */}
-                {/* {!userconnected ? "User not connected..." : <video  className="w-full h-full object-cover" autoPlay ref={remotevid} id="remote" ></video>} */}
               {renderRemoteVideo()}
             <div className="z-3 absolute bottom-2 right-2 bg-white aspect-video h-[30%] rounded-xl overflow-hidden">
-              {/* <video  className="w-full h-full object-cover" autoPlay ref={localvid} ></video> */}
               {renderLocalvideeo()}
             </div>
             </div>

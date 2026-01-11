@@ -3,6 +3,7 @@ import axios from "axios";
 export const Recording = (strean:MediaStream,room:string):{
     startrecording:()=>void ,
     stopRecording:()=>Promise<{videoBlob:Blob,videoUrl:string}>
+    startuploading:(videoFile: File) => Promise<void>
 } =>{
     let recorder = new MediaRecorder(strean);
     const data = <Blob[]>([]); 
@@ -26,7 +27,7 @@ export const Recording = (strean:MediaStream,room:string):{
         recorder.onstop = ()=>{
             const videoBlob = new Blob(data,{type:"video/webm"});
             const videoFile = new File([videoBlob], `${room}.webm`, { type: "video/webm" });
-            // stop(videoFile);
+            // startuploading(videoFile);
             const videoUrl =URL.createObjectURL(videoBlob);
             console.log(" recording pushed")
             resolve({videoUrl,videoBlob})
@@ -121,7 +122,7 @@ export const Recording = (strean:MediaStream,room:string):{
         console.log(response);
     }
 
-    const stop=async(videoFile:File)=>{
+    const startuploading=async(videoFile:File)=>{
         const chunksize = 10 * 1024 * 1024;
         const totalchunks = Math.ceil(videoFile.size/chunksize);
         const UploadId =await startmultipart()
@@ -131,5 +132,5 @@ export const Recording = (strean:MediaStream,room:string):{
         completeupload(etags,UploadId);
     }
 
-    return {startrecording,stopRecording}
+    return {startrecording,stopRecording,startuploading}
 }

@@ -2,10 +2,15 @@ import express, { type Request, type Response } from "express";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { upload } from "./multer.js";
 import { mergeChunks } from "./merge.js";
-import {S3Client,PutObjectCommand, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand} from "@aws-sdk/client-s3"
+import {S3Client,PutObjectCommand, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand, AbortMultipartUploadCommand} from "@aws-sdk/client-s3"
 import 'dotenv/config'
+import cors  from "cors";
+
 const app = express();
 app.use(express.json())
+app.use(cors())
+
+
 if (!process.env.S3_SECRET_ID || !process.env.S3_SECRET_KEY) {
   throw new Error("AWS credentials missing");
 }
@@ -42,7 +47,6 @@ app.post("/upload",upload.single("video"),async(req:Request,res:Response)=>{
 app.post("/signedurl",async(req,res)=>{
     try{
         const keyvalue = req.body.key;
-        console.log(keyvalue);
         const cmd = new PutObjectCommand({
             Bucket:"podster-01",
             Key:keyvalue
@@ -99,16 +103,13 @@ app.post("/multipart-urls",async(req,res)=>{
 })
 
 app.post("/complete-multipart",async(req,res)=>{
-    const {parts,UploadId,filename} = req.body;
+    const {Parts,UploadId,fileName} = req.body;
     const param = {
         Bucket:"podster-01",
-        Key:filename,
+        Key:fileName,
         UploadId,
         MultipartUpload:{
-            Parts: parts.map((part:{ETag:string},index:number)=>({
-                ETag:part.ETag,
-                PartNumber:index+1
-            }))
+            Parts: Parts
         }
     }
     try{
@@ -117,7 +118,26 @@ app.post("/complete-multipart",async(req,res)=>{
         res.json(response)
     }catch(e){
         console.log(e);
+        res.json(e);
     }
+})
+
+app.post("/abort-multipart",async(req,res)=>{
+    const {UploadId,fileName} = req.body;
+    try{
+        const cmd = new AbortMultipartUploadCommand({
+            Bucket: "podster-01", 
+            Key: fileName, 
+            UploadId: UploadId
+        })
+        const response =await S3.send(cmd);
+        console.log(response)
+        res.json(response);
+    }catch(e){
+         console.log(e);
+        res.status(301).json(e);
+    }
+
 })
 
 app.listen(3003);
