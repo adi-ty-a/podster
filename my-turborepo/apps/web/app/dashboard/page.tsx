@@ -10,6 +10,7 @@ import { Quickinfo } from "../components/Quickinfo"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { v4 as uuid } from "uuid";
+import { RoomNameDialog } from "../components/RoomNameDialog"
 export default function Dashboard(){
     const router =  useRouter()
 
@@ -52,8 +53,8 @@ return <>
         <div className="flex flex-col gap-2 w-full">
             <Header tittle="Dashboard" size="sm"/>
             <div className="font-semibold text-lg ml-10 mt-6">Quick Actions</div>
-            <div className="flex w-[80%] pr-12">
-            <Quickactions variant="create" onclick={createroom}  />
+            <div className="flex w-[80%] pr-12 gap-12">
+            <RoomNameDialog/>
             <Quickactions variant="join" />
             </div>
             <div className="flex w-[90%] pr-12">

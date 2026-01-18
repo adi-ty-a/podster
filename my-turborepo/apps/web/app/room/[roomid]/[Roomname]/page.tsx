@@ -1,18 +1,21 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
 import { useParams  } from 'next/navigation';
-import Chatbox from "../../components/chatbox";
-import { Recording } from "../../webrtc/recording";
-import { rtcengine } from "../../webrtc/connectionlogic";
-import { webrtcmanager } from "../../webrtc/rtcmanager";
+import Chatbox from "../../../components/chatbox";
+import { Recording } from "../../../webrtc/recording";
+import { rtcengine } from "../../../webrtc/connectionlogic";
+import { webrtcmanager } from "../../../webrtc/rtcmanager";
 import { ControlBar } from "@/app/components/ControlBar";
 import { Header } from "@/app/components/Header";
 import { AnimatePresence, motion, scale } from "motion/react"
 import PersonIcon from '@mui/icons-material/Person';
+import { useRecording, useRooom } from "@/app/store";
 
 export default function Room() {
   const param = useParams ();
   const room = param.roomid;
+  const roomname = param.Roomname;
+  const setroomname = useRooom((state)=>state.setroomname)  
   const recorderref = useRef<ReturnType<typeof Recording> | null>(null);
   const localvid = useRef<HTMLVideoElement | null>(null);
   const remotevid = useRef<HTMLVideoElement | null>(null);
@@ -24,10 +27,13 @@ export default function Room() {
   const [remoteStream,setRemoteStream] = useState<MediaStream>()
   const [isRemoteVideoEnabled,setisRemoteVideoEnabled] = useState(true);
   const [islocalVideoEnabled,setisLocalVideoEnabled] = useState(true);
-  // const []
+
+      const setisrecording = useRecording((state)=>state.setisrecording)
+
   useEffect(()=>{
-        if(!roomid && room &&  typeof room == "string") {
-            setroomid(room)       
+        if(!roomid && room &&  typeof room == "string" && roomname && typeof roomname == "string") {
+            setroomid(room)      
+            setroomname(roomname)
         }
     },[room])
 
@@ -56,7 +62,7 @@ export default function Room() {
     useEffect(()=>{
         const rec=()=>{
             if(!recorderref.current  && typeof room === "string" && localmedia){
-                recorderref.current =  Recording(localmedia,room);
+                recorderref.current =  Recording(localmedia);
               }
         }
         rec();
@@ -167,6 +173,7 @@ export default function Room() {
          onClick={()=>{
           manager?.permissionResponse(true);
           triggerRecord();
+          setisrecording(true);
           setreqcall(false);
          }}
          className="bg-gray-300 px-3 py-1 rounded-[3px]">yes</button>

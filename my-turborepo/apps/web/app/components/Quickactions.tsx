@@ -13,7 +13,7 @@ const vairants={
         style:"border bg-[#FAFAFA]"
     }
 }
-export const Quickactions = ({variant,onclick}: {variant: keyof typeof vairants,onclick?:()=>void}) => {
+export const Quickactions = ({variant,}: {variant: keyof typeof vairants}) => {
   const data = vairants[variant];
 
   return (
@@ -23,7 +23,6 @@ export const Quickactions = ({variant,onclick}: {variant: keyof typeof vairants,
         transition: { duration: 0.1 }
       }}
       transition={{duration:.5}}
-      onClick={onclick}
       className="ml-10 mt-6 rounded-xl border px-6 py-4 flex gap-4 min-w-[500px] w-full">
       <div className={`rounded-lg p-2 w-[50px] h-[50px] ${data.style} flex items-center justify-center`}>
         {variant=="create" ?<Video color="white"/> :<Plus color="black"/>}

@@ -1,8 +1,9 @@
-import * as React from "react"
-
 import { cn } from "@/lib/utils"
+import { useRooom } from "@/app/store"
+import { useRef } from "react"
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Input({ className, type,ref, ...props }: React.ComponentProps<"input">) {
+  const setroomname = useRooom((state)=>state.setroomname) 
   return (
     <input
       type={type}
@@ -13,6 +14,9 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         className
       )}
+      onChange={(e)=>{
+        setroomname(e.target.value);
+      }}
       {...props}
     />
   )
