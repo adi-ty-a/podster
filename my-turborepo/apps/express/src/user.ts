@@ -1,6 +1,8 @@
-import  Express  from "express";
+import  Express, { Router }  from "express"
 import { prisma } from "./prisma";
 import bcrypt from "bcrypt"
+import * as jwt from "jsonwebtoken";
+import process from "process";
 type user ={
     username:string,
     password:string,
@@ -15,7 +17,7 @@ type res = {
     error?: string
 }
 
-const router = Express.Router();
+const router : Router= Express.Router();
 const saltRounds = 10;
 
 router.post("/signup",async(req,res)=>{
@@ -57,11 +59,12 @@ router.post("/login",async(req,res)=>{
         const hashedpwd = DBres.password;
         const result = await bcrypt.compare(password,hashedpwd)
         if(result){
+            var token = jwt.sign({userid:DBres.id},process.env.JWT_SECRET!)
             res.json({
                 success: true,
                 message: "Logedin",
                 data:{
-                    userid: DBres.id,
+                    token: token,
                     username:DBres.username
                 }
             })
@@ -80,3 +83,4 @@ router.post("/login",async(req,res)=>{
     });
     }
 })
+export default router

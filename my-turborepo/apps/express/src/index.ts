@@ -1,11 +1,9 @@
 import express, { type Request, type Response } from "express";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-// import { upload } from "./multer.js";
-// import { mergeChunks } from "./merge.js";
 import {S3Client,PutObjectCommand, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand, AbortMultipartUploadCommand} from "@aws-sdk/client-s3"
 import 'dotenv/config'
 import cors  from "cors";
-
+import userRouter from "./user";
 const app = express();
 app.use(express.json())
 app.use(cors())
@@ -21,6 +19,8 @@ if (!process.env.S3_SECRET_ID || !process.env.S3_SECRET_KEY) {
                 secretAccessKey:process.env.S3_SECRET_KEY
             }
         })
+
+app.use("/user",userRouter);
 
 
 app.post("/signedurl",async(req,res)=>{
