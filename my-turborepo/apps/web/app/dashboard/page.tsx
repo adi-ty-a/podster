@@ -8,11 +8,8 @@ import { Header } from "../components/Header"
 import { Quickactions } from "../components/Quickactions"
 import { Quickinfo } from "../components/Quickinfo"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { v4 as uuid } from "uuid";
 import { RoomNameDialog } from "../components/RoomNameDialog"
 export default function Dashboard(){
-    const router =  useRouter()
 
     const [navselection,setnavselection] = useState<string>("Recordings");
     const togglebutton=()=>{
@@ -21,10 +18,6 @@ export default function Dashboard(){
         }else{
             setnavselection("Recordings")
         }
-    }
-    const createroom =()=>{
-            const roomid = uuid();
-            router.push("/room/"+roomid)
     }
     
 return <>

@@ -1,15 +1,18 @@
 import { create } from "zustand"
 
 type room={
-    roomname:string | null
+    roomId:string | null,
+    roomname:string | null,
     setroomname:(roomname:string)=>void;
+    setrooId:(roomId:string)=>void;
 } 
 
 export const useRooom = create<room>((set)=>({
+    roomId:null,
     roomname:null,
-    setroomname:(roomname:string)=>set(()=> ({roomname:roomname}))
+    setroomname:(roomname:string)=>set(()=> ({roomname:roomname})),
+    setrooId:(roomId:string|null)=>set(()=> ({roomId:roomId}))
 }))
-
 
 type recording={
     isrecording:boolean;

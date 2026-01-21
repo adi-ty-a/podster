@@ -12,6 +12,12 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+enum RecordingStatus {
+  PENDING
+  UPLOADING
+  READY
+  FAILED
+}
 
 model User {
   id Int @id @default(autoincrement())
@@ -26,11 +32,12 @@ model User {
 }
 
 model Recordings{
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid()) @unique
   name String
-  date DateTime
-
-  roomId Int
+  date DateTime @default(now())
+  key String @unique
+  status RecordingStatus
+  roomId String
   room Rooms @relation(fields: [roomId], references: [id])
   
   createdById Int
@@ -38,15 +45,14 @@ model Recordings{
 }
 
 model Rooms {
-  id Int @id @default(autoincrement())
-  name String
-  date DateTime
+  id String @id @default(uuid())
+  date DateTime @default(now())
   recordings Recordings[] 
+  name String
 
   hostId Int 
   host User @relation("HostRooms",fields: [hostId], references: [id])
 
-  guestid Int
-  guest User @relation("GuestRooms",fields: [guestid],references: [id])
+  guestid Int?
+  guest User? @relation("GuestRooms",fields: [guestid],references: [id])
 }
-

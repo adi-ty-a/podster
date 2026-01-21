@@ -1,16 +1,26 @@
 import type { NextFunction,Response,Request } from "express";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+
+
+type jwt_payload ={
+    userid:number
+}
 
 export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
-    const token = req.headers["authenticaiton"];
+    const authHeader  = req.headers["authorization"];
+    const token = authHeader.split(" ")[1];
     if(token && typeof token == "string"){
-        jwt.verify(token,process.env.JWT_SECRET!,(err,decoded)=>{
-            if (err) {
-                return res.status(403).json({ message: 'Invalid or expired token'});
-            }
-            req.userId = decoded;
+        try{
+            const jwtResponse = jwt.verify(token,process.env.JWT_SECRET!);
+            const userid  = jwtResponse as jwt_payload & {userid:number}
+            req.userId = userid.userid;
             next();
+        }catch(e){
+            res.status(301).json({
+            success: false,
+            message: "JWT_wrong",
         })
+        }
     }else{
         res.status(301).json({
             success: false,

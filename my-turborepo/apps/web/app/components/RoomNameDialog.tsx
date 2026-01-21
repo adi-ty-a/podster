@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { v4 as uuid } from "uuid";
+
 import {
   Dialog,
   DialogClose,
@@ -15,15 +15,24 @@ import { Label } from "@/components/ui/label"
 import { Quickactions } from "./Quickactions"
 import { useRouter } from "next/navigation"
 import { useRooom } from "../store";
+import axios from "axios";
 
 export function RoomNameDialog() {
     const router =  useRouter()
     const Roomname = useRooom((state)=>state.roomname)
-    const createroom =()=>{
-            const roomid = uuid();
-            console.log(Roomname)
-            if(Roomname !== null && Roomname.length > 3){
-              router.push("/room/"+roomid+"/"+Roomname)
+    const RoomId = useRooom((state)=>state.setrooId);
+    const createroom = async ()=>{
+            const res = await axios.post("/room/create",{
+              Roomname
+            }) 
+            if(res.data.success){
+              const roomid = res.data.data.roomId;
+              RoomId(roomid);
+              if(Roomname !== null && Roomname.length > 3){
+                router.push("/room/"+roomid+"/"+Roomname)
+              }
+            }else{
+              console.log("error white creating the room");
             }
     }
 

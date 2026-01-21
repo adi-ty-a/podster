@@ -9,24 +9,44 @@ type failed={
     url:string,chunk:Blob,partno:number
 }
 
+// const roomid = useRooom.getState().roomId; 
+const roomid = "0259b668-016b-4e4a-b337-b344bc2315a7"
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjEsImlhdCI6MTc2ODgyMDY1MX0.1Bqr2V8ro7sMjHkJX0tpjxHp8gaJlvLf9ULeAw2v_ds" 
+
 export const UploadingRecording = ():{
     startuploading:(videoFile: File) => Promise<void>
 }=>{
     //start the process
     const startmultipart =async (fileName:string)=>{
-       const res  = await axios.post("http://localhost:3003/start-multipart",{
-        filename:fileName,
-        contentType:"video/mp4"
-       }) 
-       return res.data
+       const res  = await axios.post("http://localhost:3003/upload/start-multipart",{
+            filename:fileName,
+            roomid:roomid,
+            contentType:"video/mp4"
+       },{
+        headers:{
+            "Authorization":"Bearer " + token
+        }
+       }
+    ) 
+    if(res.data.status){
+        return res.data.data
+    }else{
+        console.log(res.data)
+        return res.data.status
+    }
     }
     // gets the parsedurls for upload
-    const geturls = async(UploadId:string,totalchunks:number,fileName:string)=>{
-        const response = await axios.post("http://localhost:3003/multipart-urls",{
-            filename:fileName,
+    const geturls = async(UploadId:string,totalchunks:number,recID:string)=>{
+        const response = await axios.post("http://localhost:3003/upload/multipart-urls",{
+            recID:recID,
+            roomid,
             PartNumber:totalchunks,
             UploadId
-        })
+        },{
+        headers:{
+            "Authorization":"Bearer " + token
+        }
+       })
         return response.data
     } 
     //creates equal chunks of video
@@ -114,19 +134,28 @@ export const UploadingRecording = ():{
         }
     }
     // final completion of the upload
-    const completeupload = async (uploadresponses:UploadedPart[],UploadId:string,fileName:string)=>{
-        const response = await axios.post("http://localhost:3003/complete-multipart",{
-            fileName:fileName ,
+    const completeupload = async (uploadresponses:UploadedPart[],UploadId:string,recID:string)=>{
+        const response = await axios.post("http://localhost:3003/upload/complete-multipart",{
+            recID:recID ,
             UploadId: UploadId,
+            roomid,
             Parts: uploadresponses,
-        })
+        },{
+        headers:{
+            "Authorization":"Bearer " + token
+        }
+       })
         console.log(response);
     }
     
-    const abortuploading=async(UploadId:string,fileName:string)=>{
-        const response = await axios.post("http://localhost:3003/abort-multipart",{
-            UploadId,fileName
-        });
+    const abortuploading=async(UploadId:string,recID:string)=>{
+        const response = await axios.post("http://localhost:3003/upload/abort-multipart",{
+            UploadId,recID,roomid
+        },{
+        headers:{
+            "Authorization":"Bearer " + token
+        }
+       });
         console.log(response);
     }
 
@@ -148,20 +177,24 @@ export const UploadingRecording = ():{
         const fileName = file.substring(0,file.lastIndexOf("."));
         const chunksize = 10 * 1024 * 1024;
         const totalchunks = Math.ceil(videoFile.size/chunksize);
-        const UploadId =await startmultipart(fileName)
-        const urls = await geturls(UploadId,totalchunks,fileName)
+        const response =await startmultipart(fileName)
+        if(!response){
+            return console.log("failed")
+        }
+        const {recID,UploadId} = response;
+        const urls = await geturls(UploadId,totalchunks,recID)
         const chunks:Blob[] = await splited_chunks(videoFile);;
         const etags =await uploadingchunks(chunks,urls)
         if(etags?.status == 'success' && etags.data){
             const orderResponse = checkorder(etags.data,totalchunks);
                 if(orderResponse?.status == "success" && orderResponse.res ){
-                    await completeupload(orderResponse.res,UploadId,fileName);
+                    await completeupload(orderResponse.res,UploadId,recID);
                 }else if(orderResponse?.status == "failed" && UploadId){
-                    await abortuploading(UploadId,fileName);
+                    await abortuploading(UploadId,recID);
                     console.log("failed uploading")
                 }
         }else if(etags?.status == "rejected" && UploadId){
-            await abortuploading(UploadId,fileName);
+            await abortuploading(UploadId,recID);
             console.log("failed uploading")
         }
     }

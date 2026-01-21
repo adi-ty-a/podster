@@ -13,9 +13,9 @@ type ControlBarData = {data:{
 const cv= {button: "py-4 rounded-full  text-white border border-gray-200 px-6"}
 export const ControlBar=({data}:ControlBarData)=>{
   //zustand recording state 
+  
     const isrecording = useRecording((state)=>state.isrecording)
     const setisrecording = useRecording((state)=>state.setisrecording)
-
     const [camera,setcamera] = useState(true);
     const [mic,setmic] = useState(true);
     const [showrecording,setrshowrecording] = useState(false);
@@ -23,8 +23,9 @@ export const ControlBar=({data}:ControlBarData)=>{
     const [startedrec,setstartedrec] = useState(false);
     const [disableRecordButton,setdisableRecordButton]  = useState(false);
     const [requestsent,setrequestsent] = useState(false);
-    const {manager,localvid,recorderref} = data
-        const togglevideo=()=>{
+    const {manager,localvid,recorderref} = data;
+
+    const togglevideo=()=>{
       if(localvid){
           setcamera(!camera);
           return manager?.togglevideo()

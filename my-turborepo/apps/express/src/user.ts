@@ -1,7 +1,7 @@
 import  Express, { Router }  from "express"
-import { prisma } from "./prisma";
+import { prisma } from "./prisma.js";
 import bcrypt from "bcrypt"
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import process from "process";
 type user ={
     username:string,
@@ -17,10 +17,11 @@ type res = {
     error?: string
 }
 
-const router : Router= Express.Router();
+
+export const userRouter : Router = Router();
 const saltRounds = 10;
 
-router.post("/signup",async(req,res)=>{
+userRouter.post("/signup",async(req,res)=>{
     const {username,password,name,email} : user= req.body;
     try{
         const hashedpwd = await bcrypt.hash(password,saltRounds)
@@ -33,12 +34,12 @@ router.post("/signup",async(req,res)=>{
             }
         });
     console.log(DBres);
-    res.json({
+    return res.json({
         success: true,
         message: "user_created",
     });
     }catch(e){
-        res.status(401).json({
+        return res.status(401).json({
             success: false,
             message: "req_failed",
             error:e 
@@ -46,41 +47,42 @@ router.post("/signup",async(req,res)=>{
     }
 })
 
-router.post("/login",async(req,res)=>{
+userRouter.post("/login",async(req,res)=>{
     const {email,password,}= req.body;
     try{
-    const DBres =await prisma.user.findFirst({
-                where:{
-                    email
-                }
-        });
-    console.log(DBres);
-    if(DBres){
-        const hashedpwd = DBres.password;
-        const result = await bcrypt.compare(password,hashedpwd)
-        if(result){
-            var token = jwt.sign({userid:DBres.id},process.env.JWT_SECRET!)
-            res.json({
-                success: true,
-                message: "Logedin",
-                data:{
-                    token: token,
-                    username:DBres.username
-                }
-            })
-        }else{
-            res.json({
-                success:false,
-                message:"wrong_password"
-            })
+        const DBres =await prisma.user.findFirst({
+                    where:{
+                        email
+                    }
+            });
+
+        if(DBres){
+                const hashedpwd = DBres.password;
+                const result = await bcrypt.compare(password,hashedpwd)
+                if(result){
+                    const token = jwt.sign({userid:DBres.id},process.env.JWT_SECRET!)
+                    return res.json({
+                        success: true,
+                        message: "Logedin",
+                        data:{
+                            token: token,
+                            username:DBres.username
+                        }
+                    })
+            }else{
+                return res.json({
+                    success:false,
+                    message:"wrong_password"
+                })
+            }
         }
-    }
+
     }catch(e){
-        res.status(401).json({
+        console.log(e);
+        return res.status(401).json({
         success: false,
         message: "user_nt_found",
         error:e
     });
     }
 })
-export default router
