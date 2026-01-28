@@ -1,4 +1,6 @@
 import axios from "axios";
+import { useRecording, useRooom } from "../store";
+import { progress } from "motion/react";
 
 type UploadedPart = {
   ETag: string
@@ -9,13 +11,21 @@ type failed={
     url:string,chunk:Blob,partno:number
 }
 
-// const roomid = useRooom.getState().roomId; 
-const roomid = "0259b668-016b-4e4a-b337-b344bc2315a7"
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjEsImlhdCI6MTc2ODgyMDY1MX0.1Bqr2V8ro7sMjHkJX0tpjxHp8gaJlvLf9ULeAw2v_ds" 
+const chunksize = 10 * 1024 * 1024;
+let totalchunks = 0
+let uploadprogress = 0
 
 export const UploadingRecording = ():{
     startuploading:(videoFile: File) => Promise<void>
 }=>{
+    const setRecordingProgess = useRecording.getState().setRecordingProgress
+    const filename = useRecording.getState().setFileName;
+    const setisUploading = useRecording.getState().setUploading;
+    const roomid = "10ecf921-41f3-4f87-943f-3b5f2065596b" //useRooom.getState().roomId; 
+    const gettoken=()=>{
+    return localStorage.getItem("token");
+    }
+
     //start the process
     const startmultipart =async (fileName:string)=>{
        const res  = await axios.post("http://localhost:3003/upload/start-multipart",{
@@ -24,7 +34,7 @@ export const UploadingRecording = ():{
             contentType:"video/mp4"
        },{
         headers:{
-            "Authorization":"Bearer " + token
+            "Authorization":"Bearer " + gettoken()
         }
        }
     ) 
@@ -44,7 +54,7 @@ export const UploadingRecording = ():{
             UploadId
         },{
         headers:{
-            "Authorization":"Bearer " + token
+            "Authorization":"Bearer " + gettoken()
         }
        })
         return response.data
@@ -69,7 +79,13 @@ export const UploadingRecording = ():{
         if (res.status !== 200) {
             throw new Error("Upload failed")
         }
-
+        
+        if(res.status == 200){
+            uploadprogress++
+            const curretnProgress = Math.floor((uploadprogress/totalchunks)*100) 
+            console.log(curretnProgress)
+            setRecordingProgess(curretnProgress)
+        }
         return {
             ETag: res.headers.etag.replaceAll('"', ""),
             PartNumber: partno + 1,
@@ -97,6 +113,7 @@ export const UploadingRecording = ():{
                 )
             }
             }
+            setisUploading()
         const uploadresponses  = await Promise.all(uploadPromises);
         const success :UploadedPart[]=[];
         const failed :failed[] =[];
@@ -110,7 +127,6 @@ export const UploadingRecording = ():{
         })
 
         //reuploading
-
         if(failed.length > 0){
             const reuploadPromises:Promise<any>[]= []
             failed.map((e)=>{
@@ -142,7 +158,7 @@ export const UploadingRecording = ():{
             Parts: uploadresponses,
         },{
         headers:{
-            "Authorization":"Bearer " + token
+            "Authorization":"Bearer " + gettoken()
         }
        })
         console.log(response);
@@ -153,7 +169,7 @@ export const UploadingRecording = ():{
             UploadId,recID,roomid
         },{
         headers:{
-            "Authorization":"Bearer " + token
+            "Authorization":"Bearer " + gettoken()
         }
        });
         console.log(response);
@@ -175,8 +191,8 @@ export const UploadingRecording = ():{
     const startuploading=async(videoFile:File)=>{
         const file = videoFile.name
         const fileName = file.substring(0,file.lastIndexOf("."));
-        const chunksize = 10 * 1024 * 1024;
-        const totalchunks = Math.ceil(videoFile.size/chunksize);
+        filename(fileName)
+        totalchunks = Math.ceil(videoFile.size/chunksize);
         const response =await startmultipart(fileName)
         if(!response){
             return console.log("failed")
@@ -189,14 +205,16 @@ export const UploadingRecording = ():{
             const orderResponse = checkorder(etags.data,totalchunks);
                 if(orderResponse?.status == "success" && orderResponse.res ){
                     await completeupload(orderResponse.res,UploadId,recID);
+                    setisUploading()
                 }else if(orderResponse?.status == "failed" && UploadId){
                     await abortuploading(UploadId,recID);
-                    console.log("failed uploading")
+                    setisUploading()
                 }
         }else if(etags?.status == "rejected" && UploadId){
             await abortuploading(UploadId,recID);
-            console.log("failed uploading")
+            setisUploading()
         }
+        filename(null)
     }
     return {startuploading}
 }

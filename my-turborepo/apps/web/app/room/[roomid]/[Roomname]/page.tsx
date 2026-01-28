@@ -9,7 +9,7 @@ import { ControlBar } from "@/app/components/ControlBar";
 import { Header } from "@/app/components/Header";
 import { AnimatePresence, motion, scale } from "motion/react"
 import PersonIcon from '@mui/icons-material/Person';
-import { useRecording, useRooom } from "@/app/store";
+import { useChat, useRecording, useRooom } from "@/app/store";
 
 export default function Room() {
   const param = useParams ();
@@ -27,8 +27,8 @@ export default function Room() {
   const [remoteStream,setRemoteStream] = useState<MediaStream>()
   const [isRemoteVideoEnabled,setisRemoteVideoEnabled] = useState(true);
   const [islocalVideoEnabled,setisLocalVideoEnabled] = useState(true);
-
-      const setisrecording = useRecording((state)=>state.setisrecording)
+  const setisrecording = useRecording((state)=>state.setisrecording)
+  const chat = useChat((state)=>state.chat)
 
   useEffect(()=>{
         if(!roomid && room &&  typeof room == "string" && roomname && typeof roomname == "string") {
@@ -139,6 +139,12 @@ export default function Room() {
       
     }
 
+    const renderChat=()=>{
+      if(userconnected){
+        return   chat && <Chatbox/>
+      }
+    }
+
   return (
     <>
       <div className="relative w-screen h-screen bg-white flex flex-col ">    
@@ -197,7 +203,7 @@ export default function Room() {
             }
           </div>
         </div>
-        {userconnected && <Chatbox/> }
+        {renderChat()}
         </div>
       </div>
     </>

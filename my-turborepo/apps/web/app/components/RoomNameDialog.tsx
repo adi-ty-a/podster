@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button"
-
 import {
   Dialog,
   DialogClose,
@@ -16,15 +15,20 @@ import { Quickactions } from "./Quickactions"
 import { useRouter } from "next/navigation"
 import { useRooom } from "../store";
 import axios from "axios";
-
 export function RoomNameDialog() {
     const router =  useRouter()
     const Roomname = useRooom((state)=>state.roomname)
     const RoomId = useRooom((state)=>state.setrooId);
     const createroom = async ()=>{
-            const res = await axios.post("/room/create",{
-              Roomname
-            }) 
+            console.log(Roomname);
+            const res = await axios.post( `${process.env.NEXT_PUBLIC_BACKEND_URL}/room/create`,{
+              roomname:Roomname
+            },{
+            headers:{
+            "Authorization":"Bearer " + localStorage.getItem("token")
+            }
+          }
+          ) 
             if(res.data.success){
               const roomid = res.data.data.roomId;
               RoomId(roomid);

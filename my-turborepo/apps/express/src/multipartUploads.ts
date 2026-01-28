@@ -3,7 +3,7 @@ import {S3Client,PutObjectCommand, CreateMultipartUploadCommand, UploadPartComma
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { saveRecording } from "./fileupload.js";
 import { authenticateToken } from "./middleware.js";
-import { error } from "node:console";
+import { prisma } from "./prisma.js";
 
 if (!process.env.S3_SECRET_ID || !process.env.S3_SECRET_KEY) {
   throw new Error("AWS credentials missing");
@@ -159,3 +159,4 @@ s3router.post("/download_url",async(req:any,res)=>{
         })
     }
 })
+

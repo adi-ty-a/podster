@@ -30,6 +30,7 @@ roomRouter.post("/create",async(req:any,res)=>{
             })
         }
     }catch(e){
+        console.log(e);
         return res.json({    
             success: false,
             message: "db_error",
@@ -38,12 +39,12 @@ roomRouter.post("/create",async(req:any,res)=>{
     }
 })
 
-roomRouter.post("/join",(req:any,res)=>{
+roomRouter.post("/join",async(req:any,res)=>{
     const roomId :string = req.body.roomId;
     const userid : number= req.userId;
     try{
         if(userid){
-            const response = prisma.rooms.update({
+            const response = await prisma.rooms.update({
                 where:{
                     id:roomId
                 },
@@ -51,12 +52,11 @@ roomRouter.post("/join",(req:any,res)=>{
                     guestid:userid,
                 }
             })
-            res.json({
+            console.log(response);
+            return res.json({
                     success: true,
                     message: "room_joined",
-                    data: {
-                        roomid:response
-                    }
+                    data:response
             })
         }else{
             return res.status(401).json({
@@ -73,4 +73,89 @@ roomRouter.post("/join",(req:any,res)=>{
     }
 })
 
-roomRouter.get("/recordings")
+roomRouter.get("/rooms_w_recordings",async(req:any,res)=>{
+    const userid = req.userId
+    const {roomId,date} = req.query;
+    const hasCursor = roomId && date;
+    console.log(roomId);
+    const DaTe = new Date(date)
+    console.log(DaTe);
+    try{
+        const DBres = await prisma.rooms.findMany({
+            take: 4,
+            where:{
+                AND:[{
+                    OR:[
+                        {
+                            guestid:userid
+                        },
+                        {
+                            hostId:userid
+                        }],
+                    },
+                    {
+                        recordings:{
+                            some:{}
+                        }
+                    }
+                ]   
+            },
+            ...(hasCursor && {
+                skip:1,
+                cursor: {
+                id: roomId,
+                date:new Date(date)
+            }}),
+            orderBy: [
+            { date: "desc" },
+            { id: "desc" },
+        ],
+        })
+        const data = DBres.map(element => {
+            const {name,date,id} = element;
+            return {
+                name,date,roomId:id
+            }
+        })    
+        return res.json({
+            status:true,
+            message:"rooms_with_recordings",
+            data
+        });
+    }catch(e){
+            res.status(403).json({
+            status:false,
+            message:"db_error",
+            error:e
+            })
+        }
+})
+
+roomRouter.post("/room_recordings",async(req,res)=>{
+    const {roomId} = req.body;
+    try{
+    const DBres = await prisma.rooms.findUnique ({
+        where:{
+            id:roomId
+        },
+        select:{
+            recordings:{
+                select:{
+                    id:true,
+                    name:true,
+                }
+            }
+        }
+    })
+    return res.json({
+        status:true,
+        message:"recordings",
+        data:DBres?.recordings});
+    }catch(e){
+        return res.status(403).json({
+            status:false,
+            message:"db_error",
+            error:e
+        })
+    }
+})

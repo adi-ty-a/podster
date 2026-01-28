@@ -1,4 +1,4 @@
-import axios from "axios";
+
 import { UploadingRecording } from "./uploading";
 import { useRooom } from "../store";
 
@@ -36,7 +36,6 @@ export const Recording = (strean:MediaStream,):{
             const videoUrl =URL.createObjectURL(videoBlob);
             console.log(room.roomname);
             resolve({videoUrl,videoBlob})
-            // splitchunks(videoFile);
             } 
         data.length = 0;
         })
