@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client";
 import { rtc } from "./webrtc_Logic";
 import { Dispatch, SetStateAction } from "react";
-
+import { useRecording } from "../store"
 interface chats{
         user:"user1"|"user2",
         msg:string,
@@ -22,6 +22,10 @@ export class webrtcmanager{
     public setisLocalVideoEnabled?:Dispatch<SetStateAction<boolean>>;
     constructor(){
         this.server = io("http://localhost:3001");
+    }
+
+    stop(){
+        useRecording.getState().setisrecording(false);
     }
 
     Connect(tracks:MediaStream,action:"join"|"create",roomid?:string){
@@ -49,6 +53,7 @@ export class webrtcmanager{
             this.server.on("new-ice-candidate",(msg) => this.currtc?.handleNewICECandidateMsg(msg));
             this.server.on("record-permission",()=> this.callback?.(true))
             this.server.on("end_recording",()=>{
+                stop();
                 this.callend?.()});
             };
             this.server.on("video-state",({state})=>{

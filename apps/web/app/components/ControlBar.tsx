@@ -85,25 +85,26 @@ export const ControlBar=({data}:ControlBarData)=>{
             <Popup tittle="Permission denied" state={showpermission}/>
             <Popup tittle="Recording Started" state={startedrec}/>
             <Popup tittle="Recording Request sent" state={requestsent}/>
-              <button className={`${cv.button} ${camera ? "bg-white": "bg-red-500" }`} onClick={togglevideo} >
-                <Video color={camera ? "#727272" :"white" }/></button>
-              <button className={`${cv.button} ${mic ? "bg-white": "bg-red-500" }`} onClick={toggleaudio}>
-                <Mic color={mic ? "#727272" :"white" } size={20}/></button>
-              <button className={`${cv.button} bg-red-500`} onClick={hangup}>
-                <Phone color="white" size={20}/></button>
-              <button
-                disabled={disableRecordButton}
-                className={`${cv.button} ${isrecording ? "bg-red-500" :"bg-white"}`} onClick={()=>{
+            <button className={`${cv.button} ${camera ? "bg-white": "bg-red-500" }`} onClick={togglevideo} >
+              <Video color={camera ? "#727272" :"white" }/></button>
+            <button className={`${cv.button} ${mic ? "bg-white": "bg-red-500" }`} onClick={toggleaudio}>
+              <Mic color={mic ? "#727272" :"white" } size={20}/></button>
+            <button className={`${cv.button} bg-red-500`} onClick={hangup}>
+              <Phone color="white" size={20}/></button>
+            <button
+              disabled={disableRecordButton}
+              className={`${cv.button} ${isrecording ? "bg-red-500" :"bg-white"}`} 
+              onClick={()=>{
                 setdisableRecordButton(true);
                 setisrecording(!isrecording);
                 return isrecording ? videoStop() :startvideo() }}>
-                <Circle color={isrecording ? "white":"#727272" } size={20}/></button>
-                 <button className={`${cv.button} ${chat ? "bg-white": "bg-red-500" }`}
-                 onClick={()=>{
+              <Circle color={isrecording ? "white":"#727272" } size={20}/></button>
+            <button className={`${cv.button} ${chat ? "bg-white": "bg-red-500" }`}
+                onClick={()=>{
                   console.log(chat);
                   chattoggle()}}>
-                  <MessageCircle color={chat ?"#727272":"white"} size={20} />
-                 </button>
-            </div>
+                <MessageCircle color={chat ?"#727272":"white"} size={20} />
+            </button>
+      </div>
     </>
 }

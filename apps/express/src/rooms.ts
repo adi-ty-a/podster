@@ -77,9 +77,6 @@ roomRouter.get("/rooms_w_recordings",async(req:any,res)=>{
     const userid = req.userId
     const {roomId,date} = req.query;
     const hasCursor = roomId && date;
-    console.log(roomId);
-    const DaTe = new Date(date)
-    console.log(DaTe);
     try{
         const DBres = await prisma.rooms.findMany({
             take: 4,

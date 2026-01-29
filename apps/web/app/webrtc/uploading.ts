@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useRecording, useRooom } from "../store";
-import { progress } from "motion/react";
 
 type UploadedPart = {
   ETag: string
@@ -21,7 +20,7 @@ export const UploadingRecording = ():{
     const setRecordingProgess = useRecording.getState().setRecordingProgress
     const filename = useRecording.getState().setFileName;
     const setisUploading = useRecording.getState().setUploading;
-    const roomid = "10ecf921-41f3-4f87-943f-3b5f2065596b" //useRooom.getState().roomId; 
+    const roomid = useRooom.getState().roomId; 
     const gettoken=()=>{
     return localStorage.getItem("token");
     }
@@ -189,6 +188,9 @@ export const UploadingRecording = ():{
 
     // main funtion of the code 
     const startuploading=async(videoFile:File)=>{
+        uploadprogress=0;
+        totalchunks=0;
+        setRecordingProgess(0);
         const file = videoFile.name
         const fileName = file.substring(0,file.lastIndexOf("."));
         filename(fileName)
