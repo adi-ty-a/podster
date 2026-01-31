@@ -135,27 +135,83 @@ s3router.post("/abort-multipart",async(req:any,res)=>{
 
 })
 
-s3router.post("/download_url",async(req:any,res)=>{
-    const {recID,roomid} = req.body;
-    const hostId = req.userId;
-    const key = `rooms\\${roomid}\\${hostId}\\${recID}`
+// s3router.post("/download_url",async(req:any,res)=>{
+//     const {recID,roomid} = req.body;
+//     const hostId = req.userId;
+//     const key = `rooms\\${roomid}\\${hostId}\\${recID}`
+//     try{
+//         const cmdParam = {
+//             Bucket: "podster-01", 
+//             Key: key,
+//         } 
+//         const cmd = new GetObjectCommand(cmdParam);
+//         const urlRes = await getSignedUrl(S3,cmd)
+//         return res.json({
+//             status:true,
+//             data:{
+//                 url:urlRes
+//             }
+//         })
+//     }catch(e){
+//         return res.status(403).json({
+//             status:false,
+//             error:e,
+//         })
+//     }
+// })
+
+s3router.post("/download_all_from_room",async(req:any,res)=>{
+    const {roomid} = req.body;
+    if(!roomid){
+        res.json({
+            status:false,
+            message:"no_roomid"
+        })
+    }
     try{
-        const cmdParam = {
-            Bucket: "podster-01", 
-            Key: key,
-        } 
-        const cmd = new GetObjectCommand(cmdParam);
-        const urlRes = await getSignedUrl(S3,cmd)
-        return res.json({
-            status:true,
-            data:{
-                url:urlRes
+        const response = await prisma.rooms.findFirst({
+            where:{
+                id:roomid
+            },
+            select:{
+                recordings:{
+                    select:{
+                        key:true,
+                        name:true
+                    }
+                }
             }
+        })
+        const keys = response?.recordings
+        const urlPromises = keys?.map(async(key)=>{
+            const cmdParam = {
+                Bucket: "podster-01", 
+                Key: key.key,
+                ResponseContentDisposition: `attachment; filename="${key.name}.webm"`,
+                ResponseContentType: "application/octet-stream",    
+                    } 
+            const cmd = new GetObjectCommand(cmdParam);
+            const urlRes = await getSignedUrl(S3,cmd)
+            console.log(urlRes)
+            return urlRes
+        })
+        if(urlPromises){
+            const urls = await Promise.all(urlPromises);
+            return res.json({
+                status:true,
+                message:"download_urls",
+                data:urls
+            })
+        }
+        return res.json({
+                status:true,
+                message:"no downloads",
         })
     }catch(e){
         return res.status(403).json({
-            status:false,
-            error:e,
+            status:true,
+            message:"wrong db call",
+            error:e
         })
     }
 })

@@ -1,3 +1,4 @@
+"use client"
 import { Video } from "lucide-react";
 import { Plus } from "lucide-react";
 import { animate, motion } from "motion/react"

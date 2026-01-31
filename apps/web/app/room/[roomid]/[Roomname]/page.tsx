@@ -7,7 +7,7 @@ import { rtcengine } from "../../../webrtc/connectionlogic";
 import { webrtcmanager } from "../../../webrtc/rtcmanager";
 import { ControlBar } from "@/app/components/ControlBar";
 import { Header } from "@/app/components/Header";
-import { AnimatePresence, motion, scale } from "motion/react"
+import { AnimatePresence,motion } from "motion/react"
 import PersonIcon from '@mui/icons-material/Person';
 import { useChat, useRecording, useRooom } from "@/app/store";
 import { UploadingIndicator } from "@/app/components/uploadingIndicator";
@@ -17,11 +17,12 @@ export default function Room() {
   const room = param.roomid;
   const roomname = param.Roomname;
   const setroomname = useRooom((state)=>state.setroomname)  
+  const setroomid = useRooom((state)=>state.setrooId)
+  const roomid = useRooom((state)=>state.roomId);
   const recorderref = useRef<ReturnType<typeof Recording> | null>(null);
   const localvid = useRef<HTMLVideoElement | null>(null);
   const remotevid = useRef<HTMLVideoElement | null>(null);
   const [localmedia,setlocalmedia] = useState<MediaStream|null>(null);
-  const [roomid,setroomid] = useState<string|null>(null);
   const [manager,setmanager] = useState<webrtcmanager|null>(null);
   const [reqcall,setreqcall] = useState(false);
   const [userconnected,setuserconnected] = useState(false);
@@ -33,8 +34,8 @@ export default function Room() {
 
   useEffect(()=>{
         if(!roomid && room &&  typeof room == "string" && roomname && typeof roomname == "string") {
-            setroomid(room)      
-            setroomname(roomname)
+            setroomid(room);
+            setroomname(roomname);
         }
     },[room])
 

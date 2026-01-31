@@ -21,6 +21,7 @@ export const UploadingRecording = ():{
     const filename = useRecording.getState().setFileName;
     const setisUploading = useRecording.getState().setUploading;
     const roomid = useRooom.getState().roomId; 
+    console.log(roomid);
     const gettoken=()=>{
     return localStorage.getItem("token");
     }
@@ -30,7 +31,7 @@ export const UploadingRecording = ():{
        const res  = await axios.post("http://localhost:3003/upload/start-multipart",{
             filename:fileName,
             roomid:roomid,
-            contentType:"video/mp4"
+            contentType:"video/webm"
        },{
         headers:{
             "Authorization":"Bearer " + gettoken()

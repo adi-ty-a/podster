@@ -1,3 +1,4 @@
+"use client"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CheckCircle2Icon } from "lucide-react"
 import { Progress } from "@/components/ui/progress"

@@ -1,7 +1,8 @@
 import  Express, { Router }  from "express";
 import { prisma } from "./prisma.js";
 export const roomRouter :Router = Express.Router();
-import { v4 as uuidv4 } from "uuid"
+import { v4 as uuidv4 } from "uuid";
+
 roomRouter.post("/create",async(req:any,res)=>{
     const Roomname:string = req.body.roomname;
     const userid = req.userId;
@@ -72,6 +73,7 @@ roomRouter.post("/join",async(req:any,res)=>{
         })
     }
 })
+
 
 roomRouter.get("/rooms_w_recordings",async(req:any,res)=>{
     const userid = req.userId
@@ -151,6 +153,45 @@ roomRouter.post("/room_recordings",async(req,res)=>{
     }catch(e){
         return res.status(403).json({
             status:false,
+            message:"db_error",
+            error:e
+        })
+    }
+})
+
+roomRouter.get("/dashboard",async(req:any,res)=>{
+    const userId = req.userId;
+    console.log(userId)
+    try{
+        
+        const DBres = await prisma.rooms.findMany({
+            select:{
+                id:true,
+                _count:{
+                    select:{
+                        recordings:true,
+                    }
+                }
+            },
+            where:{
+                OR:[{hostId:userId},{guestid:userId}]
+            }
+        })     
+        let RecordingsNo=0;
+        DBres.map((item)=>RecordingsNo+=item._count.recordings)
+        const noOfRooms= DBres.length 
+        return res.json({
+            status:true,
+            message:"collected_rooms_&_recordings",
+            data:{
+                rooms:noOfRooms,
+                recordings:RecordingsNo
+            }
+        })
+
+    }catch(e){
+        return res.status(403).json({
+            status:true,
             message:"db_error",
             error:e
         })

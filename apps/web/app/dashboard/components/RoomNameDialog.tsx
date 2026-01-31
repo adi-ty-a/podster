@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -11,9 +12,9 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Quickactions } from "./Quickactions"
+import { Quickactions } from "./QuickActionBox/Quickactions"
 import { useRouter } from "next/navigation"
-import { useRooom } from "../store";
+import { useRooom } from "../../store";
 import axios from "axios";
 export function RoomNameDialog() {
     const router =  useRouter()
