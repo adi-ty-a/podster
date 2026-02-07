@@ -20,15 +20,11 @@ export function RoomNameDialog() {
     const router =  useRouter()
     const Roomname = useRooom((state)=>state.roomname)
     const RoomId = useRooom((state)=>state.setrooId);
+    const setroomname = useRooom((state)=>state.setroomname) 
     const createroom = async ()=>{
-            console.log(Roomname);
             const res = await axios.post( `${process.env.NEXT_PUBLIC_BACKEND_URL}/room/create`,{
               roomname:Roomname
-            },{
-            headers:{
-            "Authorization":"Bearer " + localStorage.getItem("token")
             }
-          }
           ) 
             if(res.data.success){
               const roomid = res.data.data.roomId;
@@ -63,6 +59,9 @@ export function RoomNameDialog() {
             <Input
               id="link"
               defaultValue="Podcast-001"
+              onChange={(e)=>{
+                setroomname(e.target.value);
+              }}
             />
           </div>
         </div>

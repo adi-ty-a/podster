@@ -27,12 +27,11 @@ const getquickinfo=async()=>{
         } 
     })
     if(response.data.status){
-        const [recordings,rooms] = response.data.data;
+        const {recordings,rooms} = response.data.data;
         setnoOFrooms(rooms)
         setnoOFrecordings(recordings)
     }
 }
-
     return  <div className="flex w-[90%] pr-12">
                         <Quickinfo data={noOFrooms} tittle="Total_Calls"/>
                         <Quickinfo data={noOFrecordings} tittle="Recordings"/>

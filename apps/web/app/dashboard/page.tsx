@@ -12,6 +12,7 @@ export type RoomsWRecordings = {
     date:string,
     roomId:string
 }
+
 export default function Dashboard(){
 
 return <>
@@ -33,7 +34,7 @@ return <>
                 </div>
                     <ToggleNavBox/>
                 <div className="h-px mt-12 mx-6 bg-[#E5E7EB]"></div>
-                <Nav_box tittle="help"  />
+                <Nav_box tittle="help"/>
             </div>
             <div className="flex flex-col gap-2 w-full">
                 <Header tittle="Dashboard" size="sm"/>
@@ -42,7 +43,7 @@ return <>
                     <RoomNameDialog/>
                     <Quickactions variant="join" />
                 </div>
-            <QuickinfoBoxs/>
+                <QuickinfoBoxs/>
             <div className="font-semibold text-lg ml-10 my-10">Recordings</div>
                 <RecordingsBox/>
             </div>

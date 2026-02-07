@@ -2,8 +2,7 @@
 import { cn } from "@/lib/utils"
 import { useRooom } from "@/app/store"
 
-function Input({ className, type,ref, ...props }: React.ComponentProps<"input">) {
-  const setroomname = useRooom((state)=>state.setroomname) 
+function Input({ className, type,ref,onChange, ...props }: React.ComponentProps<"input">) {
   return (
     <input
       type={type}
@@ -14,12 +13,9 @@ function Input({ className, type,ref, ...props }: React.ComponentProps<"input">)
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         className
       )}
-      onChange={(e)=>{
-        setroomname(e.target.value);
-      }}
+      onChange={onChange}
       {...props}
     />
   )
 }
-
 export { Input }

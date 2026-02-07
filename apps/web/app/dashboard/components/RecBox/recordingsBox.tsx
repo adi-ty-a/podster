@@ -19,13 +19,7 @@ const [roomsWithRecordings,setroomsWithRecordings] = useState<RoomsWRecordings[]
  },[])
 
  const getRoomsWithRecordings=async()=>{
-    const token = localStorage.getItem("token");
-    const response : response= await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/room/rooms_w_recordings`,{
-        headers:{
-            authorization:"Brearer "+token
-        } 
-    })
-    console.log(response)
+    const response : response= await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/room/rooms_w_recordings`)
     if(response.data.status == true){
         setroomsWithRecordings(response.data.data)
         

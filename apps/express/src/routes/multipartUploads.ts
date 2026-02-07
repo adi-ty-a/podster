@@ -1,9 +1,9 @@
 import Express, { Router }  from "express";
 import {S3Client,PutObjectCommand, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand, AbortMultipartUploadCommand, GetObjectCommand} from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { saveRecording } from "./fileupload.js";
-import { authenticateToken } from "./middleware.js";
-import { prisma } from "./prisma.js";
+import { saveRecording } from "../uploadfunctions/fileupload.js";
+import { authenticateToken } from "../middleware.js";
+import { prisma } from "../prisma.js";
 
 if (!process.env.S3_SECRET_ID || !process.env.S3_SECRET_KEY) {
   throw new Error("AWS credentials missing");

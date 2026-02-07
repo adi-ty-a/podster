@@ -11,7 +11,6 @@ import { useState } from "react"
 
 export const Quickinfo=({data,tittle}:{data:number,tittle: keyof typeof iconsmap})=>{
     const Icon = iconsmap[tittle]
-    
     const [Tittle,setTittle] = useState(tittle)
     const iconcolor = tittle == "Total_Calls" ? "white":"black" 
     const size = tittle == "Messages" ? 20:22

@@ -1,5 +1,5 @@
 import  Express, { Router }  from "express"
-import { prisma } from "./prisma.js";
+import { prisma } from "../prisma.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken";
 import process from "process";
@@ -55,19 +55,20 @@ userRouter.post("/login",async(req,res)=>{
                         email
                     }
             });
-
         if(DBres){
                 const hashedpwd = DBres.password;
-                const result = await bcrypt.compare(password,hashedpwd)
+                const result = await bcrypt.compare(password,hashedpwd!)
                 if(result){
                     const token = jwt.sign({userid:DBres.id},process.env.JWT_SECRET!)
+                    res.cookie("access_token",token,{
+                        httpOnly:true,
+                        secure:false,
+                        sameSite:"lax",
+                        maxAge:7 * 24 * 60 * 60 * 1000,
+                    })
                     return res.json({
                         success: true,
                         message: "Logedin",
-                        data:{
-                            token: token,
-                            username:DBres.username
-                        }
                     })
             }else{
                 return res.json({

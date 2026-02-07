@@ -1,9 +1,4 @@
 "use client"
-import { useState } from "react"
-import { UploadingRecording } from "../webrtc/uploading"
-import { UploadingIndicator } from "../components/uploadingIndicator";
-import { Button } from "@/components/ui/button"
-import { FcGoogle } from "react-icons/fc";
 import {
   Card,
   CardContent,
@@ -13,15 +8,30 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-export default function Testuploading(){
-    // const [video,setvideo] = useState<any>(null)
-    // const {startuploading} = UploadingRecording();
-    // const handleFileChange=(file:React.ChangeEvent<HTMLInputElement>)=>{
-    //      const e = file.target.files?.[0];
-    //      setvideo(e);
-    // }
+import { Button } from "@/components/ui/button"
+import { FcGoogle } from "react-icons/fc";
+import { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-    return <div className="w-screen h-screen flex justify-center items-center py-6 bg-white">
+
+export default function Login(){
+    const router = useRouter();
+    const [email,setemail]= useState("");
+    const [password,setpassword]= useState(""); 
+    const [error,seterror] = useState(false);
+    const getresponse =async()=>{
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/login`,{email,password})
+        console.log(response);
+        if(response.data.success){
+            router.push('/dashboard');
+            seterror(false);
+        }else{
+            seterror(true);
+        }
+    }
+
+    return <div className="realtive w-screen h-screen flex justify-center items-center py-6 bg-white">
             <div className="w-[365px] bg-[#F5F5F5] h-fit  flex flex-col items-center justify-center rounded-t-[24px] rounded-b-[14px]">
                 <div className="w-[350px] flex flex-col h-fit justify-center pt-2">
                  <Card className="w-full max-w-sm rounded-t-[24px]">
@@ -50,14 +60,21 @@ export default function Testuploading(){
                                 type="email"
                                 placeholder="Email"
                                 required
+                                onChange={(e)=>{
+                                    setemail(e.target.value)
+                                }}
                                 />
                             </div>
                             <div className="grid gap-2">
-                            <Input id="password" type="password" placeholder="Password" required />
-                            <div className="flex items-center">
+                            <Input id="password" type="password" placeholder="Password" required 
+                                onChange={(e)=>{
+                                    setpassword(e.target.value)
+                                }}/>
+                            <div className="flex items-center justify-between">
+                                {error && <div className="text-[12px] w-full flex text-red-400">Wrong credentials</div>}
                                 <a
                                 href="#"
-                                className="ml-auto inline-block hover:underline text-sm"
+                                className="whitespace-nowrap ml-auto  hover:underline text-[12px]"
                                 >
                                 Forgot your password?
                                 </a>
@@ -67,7 +84,7 @@ export default function Testuploading(){
                         </form>
                     </CardContent>
                     <CardFooter className="flex-col gap-2">
-                        <Button type="submit" className="w-full">
+                        <Button type="submit" className="w-full" onClick={getresponse}>
                         Login
                         </Button>
                         <Button variant="outline" className="w-full">
@@ -82,12 +99,5 @@ export default function Testuploading(){
                     </div>
                 </div>
             </div>
-        {/* <a href="http://localhost:3003/google">login with google</a> */}
-                {/* <UploadingIndicator/>
-                <div className=" h-screen w-screen">
-                    <div className="text-2xl text-white">Testing Uploading of file...</div>
-                    <input className="rounded-md bg-white text-black" type="file" name="video"onChange={handleFileChange}/>
-                    <button className="rounded-md bg-white text-black" onClick={()=>{startuploading(video);}}>upload</button>
-                </div> */}
-        </div>  
-} 
+            </div>
+}

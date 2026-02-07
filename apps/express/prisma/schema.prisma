@@ -15,15 +15,16 @@ enum RecordingStatus {
 
 model User {
   id Int @id @default(autoincrement())
-  username String @unique
+  username String? @unique
   email String? @unique
-  name String
-  password String
+  name String?
+  
+  password String?
+  googleId String? @unique
+
   joinedroom Rooms[] @relation("GuestRooms")
   hostedRooms Rooms[] @relation("HostRooms")
   recordings Recordings[]
-  
-
 }
 
 model Recordings{

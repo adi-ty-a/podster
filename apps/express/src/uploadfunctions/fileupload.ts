@@ -1,5 +1,5 @@
 import Express, { Router, type NextFunction, type Response }  from "express";
-import { prisma } from "./prisma.js";
+import { prisma } from "../prisma.js";
 import { v4 as uuidv4 } from "uuid"
 
 type recordingReq = {

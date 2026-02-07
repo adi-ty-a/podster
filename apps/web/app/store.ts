@@ -1,14 +1,14 @@
 import { create } from "zustand"
 type room={
     roomId:string | null,
-    roomname:string | null,
+    roomname:string ,
     setroomname:(roomname:string)=>void;
     setrooId:(roomId:string)=>void;
 } 
 
 export const useRooom = create<room>((set)=>({
     roomId:null,
-    roomname:null,
+    roomname:"Podcast-001",
     setroomname:(roomname:string)=>set(()=> ({roomname:roomname})),
     setrooId:(roomId:string|null)=>set(()=> ({roomId:roomId}))
 }))

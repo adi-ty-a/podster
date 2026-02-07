@@ -1,20 +1,27 @@
 import type { NextFunction,Response,Request } from "express";
 import jwt from "jsonwebtoken";
 
-
 type jwt_payload ={
     userid:number
 }
 
 export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
-    const authHeader  = req.headers["authorization"];
-    if(!authHeader || authHeader == ""){
+    // const authHeader  = req.headers["authorization"];
+    // if(!authHeader || authHeader == ""){
+    //     res.status(403).json({
+    //         status:false,
+    //         message:"no_token_found"
+    //     })
+    // }
+    // const token = authHeader.split(" ")[1];
+    const token = req.cookies?.access_token
+    console.log(req.cookies)
+    if(!token || token == ""){
         res.status(403).json({
             status:false,
             message:"no_token_found"
         })
     }
-    const token = authHeader.split(" ")[1];
     if(token && typeof token == "string"){
         try{
             const jwtResponse = jwt.verify(token,process.env.JWT_SECRET!);

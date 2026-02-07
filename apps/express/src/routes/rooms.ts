@@ -1,5 +1,5 @@
 import  Express, { Router }  from "express";
-import { prisma } from "./prisma.js";
+import { prisma } from "../prisma.js";
 export const roomRouter :Router = Express.Router();
 import { v4 as uuidv4 } from "uuid";
 
