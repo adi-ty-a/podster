@@ -1,5 +1,4 @@
 "use client"
-import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -16,35 +15,32 @@ import { Quickactions } from "./QuickActionBox/Quickactions"
 import { useRouter } from "next/navigation"
 import { useRooom } from "../../store";
 import axios from "axios";
-export function RoomNameDialog() {
-    const router =  useRouter()
-    const Roomname = useRooom((state)=>state.roomname)
-    const RoomId = useRooom((state)=>state.setrooId);
-    const setroomname = useRooom((state)=>state.setroomname) 
-    const createroom = async ()=>{
-      try{
-        const res = await axios.post( `${process.env.NEXT_PUBLIC_BACKEND_URL}/room/create`,{
-          roomname:Roomname
-        },{
-          withCredentials:true
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+
+const JoinRoom = ()=>{
+    const router =  useRouter();
+    const Roomname = useRooom((state)=>state.roomname);
+    const setroomname = useRooom((state)=>state.setroomname); 
+    const setRoomId = useRooom((state)=>state.setrooId);
+    const [failed,setfailed] = useState(false); 
+    const roomId=""
+    const JoiningRoom =async()=>{
+        try{
+            setfailed(false)
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/room/join`,{
+                roomId:roomId,
+            },{withCredentials:true})
+            if(res.status == 200 && Roomname && roomId){
+                router.push("/room/"+roomId+"/"+Roomname)
+            }
+        }catch(e){
+            setfailed(true);
         }
-      ) 
-      if(res.data.success){
-        const roomid = res.data.data.roomId;
-        RoomId(roomid);
-        if(Roomname !== null && Roomname.length > 3){
-          router.push("/room/"+roomid+"/"+Roomname)
-        }
-      }else{
-        console.log("error white creating the room");
-      }
-    }catch(e){
-       console.log("error white creating the room");
     }
-    }
-    
-  return (
-    <Dialog>
+
+    return <>
+        <Dialog>
       <DialogTrigger asChild>
         <div>
             <Quickactions variant="create"/>
@@ -53,6 +49,7 @@ export function RoomNameDialog() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Create Room</DialogTitle>
+          {failed && <div className="text-red-600">Failed to join</div> }
           <DialogDescription>
             Enter room name 
           </DialogDescription>
@@ -78,12 +75,13 @@ export function RoomNameDialog() {
             </Button>
           </DialogClose>
             <Button type="button" variant="default"
-            onClick={createroom}
+            onClick={JoiningRoom}
             >
-              Create
+              Join
             </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
-  )
+    </Dialog></>
 }
+
+export default JoinRoom

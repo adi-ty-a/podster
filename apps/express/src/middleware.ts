@@ -1,10 +1,8 @@
 import type { NextFunction,Response,Request } from "express";
 import jwt from "jsonwebtoken";
-
 type jwt_payload ={
     userid:number
 }
-
 export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
     // const authHeader  = req.headers["authorization"];
     // if(!authHeader || authHeader == ""){
@@ -14,12 +12,12 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
     //     })
     // }
     // const token = authHeader.split(" ")[1];
+
+    console.log(req.cookies);
     const token = req.cookies?.access_token
-    console.log(req.cookies)
     if(!token || token == ""){
-        res.status(403).json({
-            status:false,
-            message:"no_token_found"
+        res.status(401).json({
+            message:"no_cookie_found"
         })
     }
     if(token && typeof token == "string"){
@@ -35,9 +33,6 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
         })
         }
     }else{
-        res.status(301).json({
-            success: false,
-            message: "JWT_not_found",
-        })
+        res.status(301).redirect("http:localhost:3000/login")
     }
 }

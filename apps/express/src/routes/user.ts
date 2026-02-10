@@ -22,14 +22,12 @@ export const userRouter : Router = Router();
 const saltRounds = 10;
 
 userRouter.post("/signup",async(req,res)=>{
-    const {username,password,name,email} : user= req.body;
+    const {password,email} : user= req.body;
     try{
         const hashedpwd = await bcrypt.hash(password,saltRounds)
         const DBres = await prisma.user.create({
             data:{
-                username,
                 password:hashedpwd,
-                name,
                 email
             }
         });
@@ -61,10 +59,10 @@ userRouter.post("/login",async(req,res)=>{
                 if(result){
                     const token = jwt.sign({userid:DBres.id},process.env.JWT_SECRET!)
                     res.cookie("access_token",token,{
-                        httpOnly:true,
-                        secure:false,
-                        sameSite:"lax",
-                        maxAge:7 * 24 * 60 * 60 * 1000,
+                            httpOnly: true,
+                            maxAge: 7 * 24 * 60 * 60 * 1000,
+                            sameSite: "lax",   
+                            secure: false,  
                     })
                     return res.json({
                         success: true,

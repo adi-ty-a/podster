@@ -2,7 +2,8 @@ import  Express, { Router }  from "express";
 import { prisma } from "../prisma.js";
 export const roomRouter :Router = Express.Router();
 import { v4 as uuidv4 } from "uuid";
-
+import jwt from "jsonwebtoken";
+import process from "process";
 roomRouter.post("/create",async(req:any,res)=>{
     const Roomname:string = req.body.roomname;
     const userid = req.userId;
@@ -16,12 +17,19 @@ roomRouter.post("/create",async(req:any,res)=>{
                     id:roomid
                 }
             })
-            console.log(response);
+            const RoomToken = jwt.sign({roomid,hostId:userid},process.env.JWT_SECRET!,{
+                expiresIn:"4h"
+            })
+            res.cookie("RoomToken",RoomToken,{
+                secure:false,
+                maxAge:60 * 60 * 4,
+                sameSite:"lax"
+            });
             return res.json({
                     success: true,
                     message: "room_created",
                     data:{
-                        roomId:response.id
+                        roomId:response.id,
                     }
             })
         }else{
@@ -41,23 +49,27 @@ roomRouter.post("/create",async(req:any,res)=>{
 })
 
 roomRouter.post("/join",async(req:any,res)=>{
-    const roomId :string = req.body.roomId;
+    const roomid :string = req.body.roomId;
     const userid : number= req.userId;
     try{
         if(userid){
+            console.log(roomid)
             const response = await prisma.rooms.update({
                 where:{
-                    id:roomId
+                    id:roomid
                 },
                 data:{
                     guestid:userid,
                 }
             })
-            console.log(response);
+            const RoomToken = jwt.sign({roomid,hostId:userid},process.env.JWT_SECRET!)
+            res.cookie("RoomToken",RoomToken);
             return res.json({
                     success: true,
                     message: "room_joined",
-                    data:response
+                    data:{
+                        response,
+                        }
             })
         }else{
             return res.status(401).json({
@@ -66,7 +78,7 @@ roomRouter.post("/join",async(req:any,res)=>{
             })
         }
     }catch(e){
-        return res.json({    
+        return res.status(401).json({    
             success: false,
             message: "db_error",
             error: e

@@ -20,10 +20,13 @@ export class webrtcmanager{
     public setuserconnected?:Dispatch<SetStateAction<boolean>>;
     public setisRemoteVideoEnabled?:Dispatch<SetStateAction<boolean>>;
     public setisLocalVideoEnabled?:Dispatch<SetStateAction<boolean>>;
-    constructor(){
-        this.server = io("http://localhost:3001");
-    }
 
+    constructor(){
+        this.server = io("http://localhost:3001",{withCredentials:true});
+        this.server.on("connect_error",(err)=>{
+            console.log(err.message)
+        })
+    }
     stop(){
         useRecording.getState().setisrecording(false);
     }
@@ -56,6 +59,9 @@ export class webrtcmanager{
                 stop();
                 this.callend?.()});
             };
+            this.server.on("connect_error",(err : Error)=>{
+                console.log(err instanceof Error);
+            })
             this.server.on("video-state",({state})=>{
                 console.log(state);
                 this.setisRemoteVideoEnabled?.(state)})

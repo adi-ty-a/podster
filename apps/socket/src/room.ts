@@ -14,33 +14,30 @@ interface rooms {
 export class RoomManager {
 
     private Rooms :Map<string,rooms>;
-    private roomid : string
 
 
     constructor(){
         this.Rooms = new Map<string, rooms>()
-        this.roomid = "1"
     }
 
-    createRooms(user1:user){
-        this.Rooms.set(this.roomid,{
+    createRooms(user1:user,roomid:string){
+        this.Rooms.set(roomid,{
             user1,
         })
-        return this.roomid
+        return roomid
     }
 
     joinroom(roomid:string,user:user){
-        this.roomid= roomid
         const room = this.Rooms.get(roomid);
         if(!room){
-            this.createRooms(user)
+            this.createRooms(user,roomid)
             return "Roomcreted"
         }else{
         room.user2 = user;
         this.Rooms.set(roomid,room);
         room.user1.socket.emit("send-offer",{
                 type:"send-offer",
-                roomid: this.roomid
+                roomid: roomid
             })
         return "roomjoined"
         }

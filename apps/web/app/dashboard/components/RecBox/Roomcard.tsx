@@ -18,7 +18,8 @@ export const RoomCard=({item}:{item:RoomsWRecordings})=>{
             {
             headers:{
                 Authorization:"bearer "+token
-            }
+            },
+            withCredentials:true
         })
         if(urlResponse.data.status){
             setshowRecordingBox(true)
@@ -30,7 +31,7 @@ export const RoomCard=({item}:{item:RoomsWRecordings})=>{
 
     const showRecBox=()=>{
             if(showRecordingBox && urls){
-                 return <Recording  name={name!} urls={urls!} setboxstate={setshowRecordingBox} />
+                 return <Recording key={name} name={name!} urls={urls!} setboxstate={setshowRecordingBox} />
             }
     }
 

@@ -14,15 +14,13 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-
 export default function Login(){
     const router = useRouter();
     const [email,setemail]= useState("");
     const [password,setpassword]= useState(""); 
     const [error,seterror] = useState(false);
     const getresponse =async()=>{
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/login`,{email,password},{withCredentials:true })
-        console.log(response);
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/signup`,{email,password})
         if(response.data.success){
             router.push('/dashboard');
             seterror(false);
@@ -45,7 +43,7 @@ export default function Login(){
                                     className="w-[90px] h-[90px] object-cover absolute -top-[20px] "
                                     />
                             </div>
-                            <CardTitle className="text-xl">Login to Continue</CardTitle>
+                            <CardTitle className="text-xl">Signup to Podster</CardTitle>
                             <CardDescription className="text-sm">
                             Please login to start podcasting
                             </CardDescription>
@@ -70,14 +68,8 @@ export default function Login(){
                                 onChange={(e)=>{
                                     setpassword(e.target.value)
                                 }}/>
-                            <div className="flex items-center justify-between">
-                                {error && <div className="text-[12px] w-full flex text-red-400">Wrong credentials</div>}
-                                <a
-                                href="#"
-                                className="whitespace-nowrap ml-auto  hover:underline text-[12px]"
-                                >
-                                Forgot your password?
-                                </a>
+                            <div className="flex items-center justify-start">
+                                {error && <div className="text-[12px] w-full flex text-red-400">SignUp failed retry later</div>}
                             </div>
                             </div>
                         </div>
@@ -85,19 +77,19 @@ export default function Login(){
                     </CardContent>
                     <CardFooter className="flex-col gap-2">
                         <Button type="submit" className="w-full" onClick={getresponse}>
-                        Login
+                        Sign-up
                         </Button>
                         <Button variant="outline" className="w-full" onClick={()=>{
                         }}>
-                        Login using <FcGoogle/>
+                        Sign-up using <FcGoogle/>
                         </Button>
                     </CardFooter>
                 </Card>
                     <div className="h-[50px] flex justify-center items-center gap-1">
-                            <p className="text-sm text-[#B7B6B8]">Dont have an account?</p>
+                            <p className="text-sm text-[#B7B6B8]">Already have accound ?</p>
                             <Button className="text-sm p-0 cursor-pointer" variant="link" onClick={()=>{
-                                router.push("/signup")
-                            }}>Sign Up</Button>
+                                router.push("/login")
+                            }}>Login</Button>
                     </div>
                 </div>
             </div>

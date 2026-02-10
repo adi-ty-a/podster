@@ -1,6 +1,8 @@
 import type { Socket } from "socket.io";
 import { RoomManager } from "./room.js";
-
+import cookie from "cookie"
+import jwt from "jsonwebtoken";
+import process from "process";
 export interface user{
     socket:Socket,
     name:string,
@@ -9,7 +11,6 @@ export interface user{
 export class User {
     private Users:user[];
     private roomhandler :RoomManager
-
     constructor(){
         this.Users = [];
         this.roomhandler =  new RoomManager();
@@ -17,18 +18,21 @@ export class User {
     adduser(name:string, socket:Socket){
         this.Users.push({name,socket});
     }
-
     removeuser(socketid:string){
         this.Users = this.Users.filter(x => x.socket.id !== socketid);
     }
-
-    createroom(socket:Socket){
-        const roomid =  this.roomhandler.createRooms({socket,name:"user1"});
-        socket.data.roomid = roomid;
-        socket.emit("roomid",roomid,"user1");
-    }
+    // createroom(socket:Socket){
+    //     const roomid =  this.roomhandler.createRooms({socket,name:"user1"});
+    //     socket.data.roomid = roomid;
+    //     socket.emit("roomid",roomid,"user1");
+    // }
 
     joinroom(socket:Socket,roomid:string){
+        const cookies = cookie.parse(socket.handshake.headers.cookie! || "");
+        const RoomToken = cookies.RoomToken
+        if(!RoomToken) return socket.disconnect();
+        const jwtResponse :any= jwt.verify(RoomToken!,process.env.JWT_SECRET!)
+        if(jwtResponse.roomid !== roomid) return socket.disconnect(); 
         const res = this.roomhandler.joinroom(roomid,{socket,name:"user2"});
         socket.data.roomid = roomid;
         socket.emit("joined",res)
@@ -39,7 +43,6 @@ export class User {
             console.log(roomid)
             this.roomhandler.onmessage({roomid,socket,msg});
         })
-
         socket.on("video-state",({state}:{state:boolean})=>{
             const roomid =socket.data.roomid
             this.roomhandler.handlevideostate({socket,state,roomid});
@@ -62,13 +65,11 @@ export class User {
         socket.on("end_recording",({roomid}:{roomid:string})=>{
             this.roomhandler.endrecording({roomid,socket});
         })
-
         socket.on("hangup",async ({roomid}:{roomid:string})=>{
             await this.removeuser(socket.id)
             this.roomhandler.endcall({roomid,socket});
             socket.emit("room-closed")
         })
-
         socket.on("disconnect",(reason)=>{
             console.log(reason);
             this.removeuser(socket.id)
@@ -78,5 +79,4 @@ export class User {
             }
         })
     }
-
 }

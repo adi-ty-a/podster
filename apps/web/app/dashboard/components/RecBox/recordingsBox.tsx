@@ -19,16 +19,18 @@ const [roomsWithRecordings,setroomsWithRecordings] = useState<RoomsWRecordings[]
  },[])
 
  const getRoomsWithRecordings=async()=>{
-    const response : response= await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/room/rooms_w_recordings`)
-    if(response.data.status == true){
-        setroomsWithRecordings(response.data.data)
-        
+    try{
+        const response : response= await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/room/rooms_w_recordings`,{withCredentials: true})
+        if(response.data.status == true){
+            setroomsWithRecordings(response.data.data)       
+        }
+    }catch(e){
+            
+        }
     }
-}
-
     return  <div className="flex flex-col gap-2 px-8 ">
                     {roomsWithRecordings?.map((item:RoomsWRecordings)=>{
-                        return <RoomCard item={item}/>
+                        return <RoomCard key={item.name} item={item}/>
                     }) }
             </div>
 }

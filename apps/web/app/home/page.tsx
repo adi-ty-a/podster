@@ -11,8 +11,12 @@ import CallEndIcon from '@mui/icons-material/CallEnd';
 import { SendHorizonal } from "lucide-react"
 import { MessageCircle } from "lucide-react"
 import { motion } from "motion/react"
+import { useRouter } from "next/navigation"
+import JoinPodcastBtn from "./buttoncomponet"
 
 const Home = () => {
+
+  const router  = useRouter()
     return (
       <div className="w-full h-fit flex justify-center bg-[#FAFDFF]">
           <div className=" bg-[#FAFDFF] h-full max-w-[1200px] w-screen p-1 flex flex-col items-center">
@@ -34,7 +38,7 @@ const Home = () => {
                   <div className="text-[14px] text-black ">Product</div>
                   <div className="text-[14px] text-black ">About</div>
                 </div>
-              <HButton tittle="Join Podcast" vairant="black"/>
+              <JoinPodcastBtn/>
             </div>
             {/* image */}
           <div className="w-full relative bg-amber-600 ">
