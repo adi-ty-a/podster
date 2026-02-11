@@ -5,6 +5,7 @@ export default function JoinPodcastBtn(){
     return <HButton        
         tittle="Join Podcast"
         vairant="black" 
+        className="text-xl"
         onClick={()=>router.push("/login")}
         />
 }

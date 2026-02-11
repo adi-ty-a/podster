@@ -13,30 +13,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Quickactions } from "./QuickActionBox/Quickactions"
 import { useRouter } from "next/navigation"
-import { useRooom } from "../../store";
-import axios from "axios";
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
 
 const JoinRoom = ()=>{
     const router =  useRouter();
-    const Roomname = useRooom((state)=>state.roomname);
-    const setroomname = useRooom((state)=>state.setroomname); 
-    const setRoomId = useRooom((state)=>state.setrooId);
+    const [link,setlink] = useState("")
     const [failed,setfailed] = useState(false); 
-    const roomId=""
-    const JoiningRoom =async()=>{
-        try{
-            setfailed(false)
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/room/join`,{
-                roomId:roomId,
-            },{withCredentials:true})
-            if(res.status == 200 && Roomname && roomId){
-                router.push("/room/"+roomId+"/"+Roomname)
-            }
-        }catch(e){
-            setfailed(true);
-        }
+    const JoiningRoom =()=>{
+       router.push(link);
     }
 
     return <>
@@ -63,7 +48,7 @@ const JoinRoom = ()=>{
               id="link"
               defaultValue="Podcast-001"
               onChange={(e)=>{
-                setroomname(e.target.value);
+                setlink(e.target.value);
               }}
             />
           </div>

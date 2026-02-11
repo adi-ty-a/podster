@@ -5,7 +5,7 @@ export type HButtonProps ={
 export default function HButton({tittle,vairant,className,...props}:HButtonProps){ 
         if(vairant == "black"){
         return <>
-                <button {...props} className="relative overflow-hidden rounded-lg bg-black px-[16px] py-[10px] text-[14px] text-white w-fit h-fit shadow-[0_3px_10px_rgb(0,0,0,0.2)] hover:scale-105 transition duration-300 ease-in-out z-2">
+                <button {...props} className="relative overflow-hidden rounded-lg bg-black px-[16px] py-[10px] text-[12px] text-white w-fit h-fit shadow-[0_3px_10px_rgb(0,0,0,0.2)] hover:scale-105 transition duration-300 ease-in-out z-2">
                 <span className="pointer-events-none absolute inset-x-0 top-0 h-[45%]
                 bg-gradient-to-b from-white/30 via-white/10 to-transparent ">
                 </span>
@@ -14,7 +14,7 @@ export default function HButton({tittle,vairant,className,...props}:HButtonProps
             </>
         }else{
         return <>
-                <button className="relative overflow-hidden rounded-lg  px-[16px] py-[10px] text-[14px] text-black w-fit h-fit border-1 bg-white z-2 shadow-[0_3px_50px_rgb(0,0,0,0.1)] hover:scale-105 transition duration-300 ease-in-out">
+                <button className="relative overflow-hidden rounded-lg  px-[16px] py-[10px] text-[12px] text-black w-fit h-fit border-1 bg-white z-2 shadow-[0_3px_50px_rgb(0,0,0,0.1)] hover:scale-105 transition duration-300 ease-in-out">
                     {tittle}
                 </button>
             </>
