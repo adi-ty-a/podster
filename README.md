@@ -1,135 +1,166 @@
-# Turborepo starter
+# 🎥 Podster
 
-This Turborepo starter is maintained by the Turborepo core team.
+## Production-Grade Real-Time Video Calling & Recording Platform
 
-## Using this example
+Podster is a scalable real-time video communication platform built using
+WebRTC with a custom signaling server.\
+It enables users to join live video rooms, record sessions directly in
+the browser, and upload recordings securely to AWS S3 using multipart
+uploads.
 
-Run the following command:
+------------------------------------------------------------------------
 
-```sh
-npx create-turbo@latest
-```
+# 🚀 Core Features
 
-## What's inside?
+-   🔴 Real-time peer-to-peer video calling (WebRTC)
+-   🔁 Custom signaling server using Socket.io
+-   🎙️ In-browser recording with MediaRecorder API
+-   ☁️ Secure multipart uploads to AWS S3
+-   🔐 JWT authentication & cookie-based sessions
+-   📦 Scalable backend architecture
+-   🧩 Clean frontend/backend separation
+-   💰 Cost-efficient media handling (server does NOT process video
+    streams)
 
-This Turborepo includes the following packages/apps:
+------------------------------------------------------------------------
 
-### Apps and Packages
+# 🛠 Tech Stack
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Frontend
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+-   Next.js
+-   WebRTC (Browser APIs)
+-   MediaRecorder API
+-   Tailwind CSS
+-   Axios
 
-### Utilities
+## Backend
 
-This Turborepo has some additional tools already setup for you:
+-   Node.js
+-   Express
+-   Socket.io
+-   JWT Authentication
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+## Cloud & Storage
 
-### Build
+-   AWS S3 (Multipart Upload)
+-   Pre-signed URLs
+-   Secure cookie handling
 
-To build all apps and packages, run the following command:
+------------------------------------------------------------------------
 
-```
-cd my-turborepo
+# 🧠 High-Level Architecture
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+Client (Next.js) │ │ WebRTC Media (P2P) │ Socket.io Signaling Server
+(Express) │ │ REST APIs (Auth + S3 URL Generation) │ AWS S3 (Multipart
+Upload Storage)
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
+------------------------------------------------------------------------
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+# 🔹 Video Call Flow
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+1.  User joins a room.
+2.  Socket.io establishes signaling between peers.
+3.  WebRTC negotiates SDP & ICE candidates.
+4.  Media streams flow peer-to-peer (server not in media path).
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+------------------------------------------------------------------------
 
-### Develop
+# 🔹 Recording & Upload Flow
 
-To develop all apps and packages, run the following command:
+1.  Browser records session via MediaRecorder.
+2.  Recording is split into chunks.
+3.  Backend generates S3 pre-signed multipart URLs.
+4.  Client uploads chunks directly to S3.
+5.  Backend finalizes multipart upload.
 
-```
-cd my-turborepo
+✅ Server never handles large media files\
+✅ Reduced infrastructure cost\
+✅ Horizontally scalable design
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+------------------------------------------------------------------------
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+# 🔐 Security & SaaS Considerations
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+-   JWT-based authentication
+-   Cookie session validation
+-   Signed & time-limited S3 upload URLs
+-   Recommended per-user storage quotas
+-   Recommended rate limiting
+-   Backend never streams media
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+------------------------------------------------------------------------
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+# 📦 Installation
 
-### Remote Caching
+## 1️⃣ Clone Repository
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+git clone https://github.com/yourusername/podster.git cd podster
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+## 2️⃣ Install Dependencies
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+Frontend: cd client npm install
 
-```
-cd my-turborepo
+Backend: cd server npm install
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+## 3️⃣ Environment Variables (.env)
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+PORT=5000 JWT_SECRET=your_secret AWS_ACCESS_KEY= AWS_SECRET_KEY=
+AWS_REGION= S3_BUCKET_NAME=
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## 4️⃣ Run Development Servers
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+Backend: npm run dev
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
+Frontend: npm run dev
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+------------------------------------------------------------------------
 
-## Useful Links
+# 🌍 Deployment Strategy
 
-Learn more about the power of Turborepo:
+-   Frontend → Vercel / VPS
+-   Backend → VPS / AWS EC2
+-   Storage → AWS S3
+-   CI/CD → Production branch auto-deploy
+-   Development branch for feature builds
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+------------------------------------------------------------------------
+
+# 📈 Scalability Roadmap
+
+-   Redis adapter for scaling Socket.io
+-   TURN server for NAT traversal
+-   Horizontal scaling with load balancer
+-   Room persistence in database
+-   Recording dashboard
+-   SaaS billing integration
+-   WebRTC metrics monitoring
+
+------------------------------------------------------------------------
+
+# 🎯 Resume-Ready Summary
+
+Podster is a production-style real-time video platform demonstrating:
+
+-   Deep understanding of WebRTC internals
+-   Custom signaling server implementation
+-   Secure multipart upload architecture
+-   Cloud-native storage strategy
+-   Cost-aware SaaS design thinking
+-   Scalable backend engineering
+
+------------------------------------------------------------------------
+
+# 🏗 Advanced Technical Notes (For Recruiters)
+
+-   Media streams are peer-to-peer (server not bandwidth bottleneck).
+-   Backend only handles signaling & signed URL generation.
+-   Multipart upload avoids memory spikes for large recordings.
+-   Architecture is ready for horizontal scaling.
+-   Designed with cost control and abuse prevention in mind.
+
+------------------------------------------------------------------------
+
+# 📜 License
+
+MIT License
