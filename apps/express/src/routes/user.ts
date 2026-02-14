@@ -57,7 +57,9 @@ userRouter.post("/login",async(req,res)=>{
                 const hashedpwd = DBres.password;
                 const result = await bcrypt.compare(password,hashedpwd!)
                 if(result){
-                    const token = jwt.sign({userid:DBres.id},process.env.JWT_SECRET!)
+                    const token = jwt.sign({userid:DBres.id},process.env.JWT_SECRET!,
+                        {expiresIn:"24h"}
+                    )
                     res.cookie("access_token",token,{
                             httpOnly: true,
                             maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -77,11 +79,21 @@ userRouter.post("/login",async(req,res)=>{
         }
 
     }catch(e){
-        console.log(e);
         return res.status(401).json({
         success: false,
         message: "user_nt_found",
         error:e
     });
     }
+})
+
+userRouter.post("/logout",(req,res)=>{
+    res.clearCookie("access_token",{
+        httpOnly:true,
+        secure:false,
+        sameSite: "lax"
+    })
+    return  res.json({
+        message:"user loged-out"
+    })
 })

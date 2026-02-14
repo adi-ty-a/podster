@@ -13,10 +13,6 @@ export const saveRecording = async(req:any,res:Response,next:NextFunction)=>{
         try{
             const recID = uuidv4()
             const key = `rooms\\${roomid}\\${hostId}\\${recID}`
-            console.log(req.body);
-            console.log(recID);
-            console.log(hostId);
-            console.log(key);
             await prisma.recordings.create({
                 data:{
                     id:recID,

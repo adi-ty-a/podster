@@ -1,10 +1,11 @@
 "use client"
 import { Circle, MessageCircle, Mic, Pause, Phone, Video } from "lucide-react"
 import { webrtcmanager } from "../webrtc/rtcmanager"
-import { RefObject, useState } from "react"
+import { RefObject, useEffect, useState } from "react"
 import { Recording } from "../webrtc/recording"
 import { useChat, useRecording } from "../store"
 import { Popup } from "./popup"
+import axios from "axios"
 type ControlBarData = {data:{
     manager: webrtcmanager | null;
     localvid: RefObject<HTMLVideoElement|null>;
@@ -25,6 +26,14 @@ export const ControlBar=({data}:ControlBarData)=>{
     const [disableRecordButton,setdisableRecordButton]  = useState(false);
     const [requestsent,setrequestsent] = useState(false);
     const {manager,localvid,recorderref} = data;
+    const [ShowRecButton,setShowRecButton] = useState(false);
+    useEffect(()=>{
+      const CheckCreds = async()=>{
+        const res : any = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check`,{withCredentials:true})
+        setShowRecButton(res.data);
+      }
+      CheckCreds()
+    },[])
 
     const togglevideo=()=>{
       if(localvid){
@@ -91,14 +100,14 @@ export const ControlBar=({data}:ControlBarData)=>{
               <Mic color={mic ? "#727272" :"white" } size={20}/></button>
             <button className={`${cv.button} bg-red-500`} onClick={hangup}>
               <Phone color="white" size={20}/></button>
-            <button
+            {ShowRecButton && <button
               disabled={disableRecordButton}
               className={`${cv.button} ${isrecording ? "bg-red-500" :"bg-white"}`} 
               onClick={()=>{
                 setdisableRecordButton(true);
                 setisrecording(!isrecording);
                 return isrecording ? videoStop() :startvideo() }}>
-              <Circle color={isrecording ? "white":"#727272" } size={20}/></button>
+              <Circle color={isrecording ? "white":"#727272" } size={20}/></button>}
             <button className={`${cv.button} ${chat ? "bg-white": "bg-red-500" }`}
                 onClick={()=>{
                   console.log(chat);

@@ -54,3 +54,9 @@ model Rooms {
 
   @@unique([date, id])
 }
+
+model Creds{
+    id Int @id @default(autoincrement())
+    date DateTime @unique @db.Date
+    count Int
+}

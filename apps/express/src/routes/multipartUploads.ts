@@ -43,7 +43,24 @@ s3router.post("/start-multipart",authenticateToken,saveRecording,async(req:any,r
         Key:keyvalue,
         ContentType: contentType
     }
+    const today = new Date();
+    today.setUTCHours(0,0,0,0)
     try{
+        const usage : any = await prisma.creds.findUnique({
+            where:{ date:today }
+        })
+        if(!usage) throw new Error("")
+        if (usage.count >= 100 ){
+            throw new Error("Daily limit reached")
+        }
+        await prisma.creds.update({
+            where:{ date:today },
+            data:{
+                count:{
+                    increment: 1
+                }
+            }
+        })
         const multipart = new CreateMultipartUploadCommand(param)
         const response = await S3.send(multipart);
         const resData = {
@@ -55,7 +72,6 @@ s3router.post("/start-multipart",authenticateToken,saveRecording,async(req:any,r
         }
         return res.json(resData); 
     }catch(e){
-            console.log(e);
             return res.status(403).json({
                 status:false,
                 error:e

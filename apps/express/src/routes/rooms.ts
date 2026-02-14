@@ -62,8 +62,14 @@ roomRouter.post("/join",async(req:any,res)=>{
                     guestid:userid,
                 }
             })
-            const RoomToken = jwt.sign({roomid,hostId:userid},process.env.JWT_SECRET!)
-            res.cookie("RoomToken",RoomToken);
+            const RoomToken = jwt.sign({roomid,hostId:userid},process.env.JWT_SECRET!,{
+                expiresIn:"4h"
+            })
+            res.cookie("RoomToken",RoomToken,{
+                secure:false,
+                maxAge:60 * 60 * 4,
+                sameSite:"lax"
+            });
             return res.json({
                     success: true,
                     message: "room_joined",

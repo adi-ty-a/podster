@@ -35,7 +35,8 @@ export const UploadingRecording = ():{
        },{
         headers:{
             "Authorization":"Bearer " + gettoken()
-        }
+        },
+        withCredentials:true
        }
     ) 
     if(res.data.status){
@@ -55,7 +56,8 @@ export const UploadingRecording = ():{
         },{
         headers:{
             "Authorization":"Bearer " + gettoken()
-        }
+        },
+        withCredentials:true
        })
         return response.data
     } 
@@ -159,7 +161,8 @@ export const UploadingRecording = ():{
         },{
         headers:{
             "Authorization":"Bearer " + gettoken()
-        }
+        },
+        withCredentials:true
        })
         console.log(response);
     }
@@ -170,7 +173,8 @@ export const UploadingRecording = ():{
         },{
         headers:{
             "Authorization":"Bearer " + gettoken()
-        }
+        },
+        withCredentials:true
        });
         console.log(response);
     }

@@ -12,8 +12,6 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
     //     })
     // }
     // const token = authHeader.split(" ")[1];
-
-    console.log(req.cookies);
     const token = req.cookies?.access_token
     if(!token || token == ""){
         res.status(401).json({

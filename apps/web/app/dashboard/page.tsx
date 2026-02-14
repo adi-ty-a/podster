@@ -28,7 +28,9 @@ return <>
                             className="size-[80px]  object-cover object-center"
                             />
                         </div>
-                            <div className=" absolute left-10 size-[15px] rounded-full bg-black animate-pulse"></div>
+                            <div className=" absolute left-10 size-[15px] rounded-full bg-black animate-pulse">
+                               
+                            </div>
                         </div>
                         <div className="text-2xl font-bold  ">Podster</div>
                 </div>

@@ -11,7 +11,6 @@ import { prisma } from "./prisma.js"
 import jwt  from "jsonwebtoken";
 import process from "process";
 import cookieParser from "cookie-parser";
-
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID!,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -69,6 +68,33 @@ app.get("/google/callback",passport.authenticate("google", { session: false }),(
 )
 
 app.use("/user",userRouter);
+
+
+app.get("/check", async (req, res) => {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    
+    try {
+        let usage = await prisma.creds.findUnique({
+            where: { date: today }
+        });
+        
+        if (!usage) {
+            usage = await prisma.creds.create({
+                data: { date: today, count: 0 }
+            });
+        }
+        
+        if (usage.count >= 100) {
+            throw new Error("Daily limit reached");
+        }
+        
+        res.json(true);
+    } catch (e) {
+        res.status(403).json(e);
+    }
+});
+
 app.use("/room",authenticateToken,roomRouter);
 app.use("/upload",authenticateToken,s3router);
 console.log("server started");
