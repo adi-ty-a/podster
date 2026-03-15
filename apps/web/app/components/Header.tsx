@@ -31,7 +31,7 @@ export const Header=({tittle,size}:vairants)=>{
     }
 
 return <>
-    <div className="flex pl-8 justify-between items-center w-full h-[10vh] bg-white border-b ">
+    <div className="flex pl-8 justify-between items-center w- max-w-[1300px] h-[10vh] bg-white border-b ">
               <div className={`text-black text-4xl ${vairants[size]}`}>{tittle}</div>
                 <div className="flex justify-between items-center gap-6 pr-8">
                 {tittle=="Podster" ?  <DialogCloseButton url={`${process.env.NEXT_PUBLIC_PAGE_URL}/join/${roomid}/${roomname}`}/> : <div className="relative size-[28px] bg-[#F2F2F2] rounded-full border" onClick={ToggleProfile}>

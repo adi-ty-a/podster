@@ -24,13 +24,13 @@ export const Quickactions = ({variant,}: {variant: keyof typeof vairants}) => {
         transition: { duration: 0.1 }
       }}
       transition={{duration:.5}}
-      className="ml-10 mt-6 rounded-xl border px-6 py-4 flex gap-4 min-w-[500px] w-full">
-      <div className={`rounded-lg p-2 w-[50px] h-[50px] ${data.style} flex items-center justify-center`}>
+      className="ml-10 mt-6 rounded-xl md:border md:px-12 md:py-4 py-2 flex gap-4 md:max-w-[500px] md:w-full md:flex-row flex-col md:items-start items-center">
+      <div className={`rounded-lg p-2  md:size-[50px] size-[60px] ${data.style} flex items-center justify-center`}>
         {variant=="create" ?<Video color="white"/> :<Plus color="black"/>}
       </div>
-      <div className="flex flex-col">
-        <p className="font-semibold text-[18px]">{data.title}</p>
-        <p className="text-[16px] text-black/80">{data.dis}</p>
+      <div className="md:flex flex-col hidden ">
+        <p className="font-semibold md:text-[18px] text-[14px]">{data.title}</p>
+        <p className="md:text-[16px] text-[12px] text-black/80">{data.dis}</p>
       </div>
     </motion.div>
   );

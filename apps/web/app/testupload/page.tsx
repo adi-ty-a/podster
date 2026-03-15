@@ -1,93 +1,11 @@
 "use client"
-import { useState } from "react"
-import { UploadingRecording } from "../webrtc/uploading"
-import { UploadingIndicator } from "../components/uploadingIndicator";
-import { Button } from "@/components/ui/button"
-import { FcGoogle } from "react-icons/fc";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 export default function Testuploading(){
-    // const [video,setvideo] = useState<any>(null)
-    // const {startuploading} = UploadingRecording();
-    // const handleFileChange=(file:React.ChangeEvent<HTMLInputElement>)=>{
-    //      const e = file.target.files?.[0];
-    //      setvideo(e);
-    // }
+    const cn = (...classes:string[])=> classes.join(" ");
 
-    return <div className="w-screen h-screen flex justify-center items-center py-6 bg-white">
-            <div className="w-[365px] bg-[#F5F5F5] h-fit  flex flex-col items-center justify-center rounded-t-[24px] rounded-b-[14px]">
-                <div className="w-[350px] flex flex-col h-fit justify-center pt-2">
-                 <Card className="w-full max-w-sm rounded-t-[24px]">
-                    <CardHeader>
-                        <div className="flex items-center justify-center flex-col">
-                            <div className="relative  size-[50px] rounded-[14px] overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)] mb-4">
-                                <div className="absolute -top-6  blur-[18px] w-[82px] h-[25px] bg-white z-1 flex " />
-                                <img
-                                    src="logoimg.jpg"
-                                    alt="logo"
-                                    className="w-[90px] h-[90px] object-cover absolute -top-[20px] "
-                                    />
-                            </div>
-                            <CardTitle className="text-xl">Login to Continue</CardTitle>
-                            <CardDescription className="text-sm">
-                            Please login to start podcasting
-                            </CardDescription>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <form>
-                        <div className="flex flex-col gap-2">
-                            <div className="grid gap-2">
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="Email"
-                                required
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                            <Input id="password" type="password" placeholder="Password" required />
-                            <div className="flex items-center">
-                                <a
-                                href="#"
-                                className="ml-auto inline-block hover:underline text-sm"
-                                >
-                                Forgot your password?
-                                </a>
-                            </div>
-                            </div>
-                        </div>
-                        </form>
-                    </CardContent>
-                    <CardFooter className="flex-col gap-2">
-                        <Button type="submit" className="w-full">
-                        Login
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                        Login using <FcGoogle/>
-                        </Button>
-
-                    </CardFooter>
-                </Card>
-                    <div className="h-[50px] flex justify-center items-center gap-1">
-                            <p className="text-sm text-[#B7B6B8]">Dont have an account?</p>
-                            <Button className="text-sm p-0 cursor-pointer" variant="link">Sign Up</Button>
-                    </div>
-                </div>
+    return  <div className="bg-black w-screen h-screen flex items-center justify-center">
+                <div className={cn("bg-white rounded-2xl min-h-100 w-[80%]",
+                "bg-[radial-gradient(#000_1px,transparent_1px)]",
+                "[background-size:10px_10px]"
+                )}></div>
             </div>
-        {/* <a href="http://localhost:3003/google">login with google</a> */}
-                {/* <UploadingIndicator/>
-                <div className=" h-screen w-screen">
-                    <div className="text-2xl text-white">Testing Uploading of file...</div>
-                    <input className="rounded-md bg-white text-black" type="file" name="video"onChange={handleFileChange}/>
-                    <button className="rounded-md bg-white text-black" onClick={()=>{startuploading(video);}}>upload</button>
-                </div> */}
-        </div>  
-} 
+}

@@ -38,7 +38,7 @@ export const RoomCard=({item}:{item:RoomsWRecordings})=>{
     const stringDate = date.toString().split("T")[0]
     const UploadedTime = date.toString().split("T")[1]?.slice(0,5);
 
-    return <div className="relative flex min-w-[1200px] w-full h-[80px] rounded-xl border items-center justify-between">
+    return <div className="relative flex max-w-[1300px] w-full h-[80px] rounded-xl border items-center justify-between">
                     {showRecBox()}
                     <div className=" flex items-center justify-start gap-4 pl-4">
                     <div className="size-10 bg-[#EBEBEB] rounded-2xl flex items-center justify-center">

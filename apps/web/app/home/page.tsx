@@ -17,14 +17,20 @@ import { Socials } from "./socials"
 import MenuBox from "./menubox";
 import { X } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { StartFreeTrail } from "./startfreetrial";
+
+
+
 const Home = () => {
   const [show,setclose] = useState(false);
+  const router = useRouter()
     return (
       <div className=" relative w-full h-fit flex justify-center bg-[#FAFDFF]">
         {show && <div className="absolute w-screen h-full bg-white/80 backdrop-blur-lg z-30 md:hidden ">
           <div className="flex flex-col items-center justify-start py-10 gap-10 sticky">
                 <div className=" flex font-semibold text-3xl">Podster <div><X onClick={()=>setclose(false)} className="absolute right-10 top-5"/></div></div>
-                  <div className="text-lg text-[#6D6D6D]">SignUp</div>
+                  <div className="text-lg text-[#6D6D6D]" onClick={()=>router.push("/signup")}>SignUp</div>
                   <div className="text-lg text-[#6D6D6D]">About</div>
           </div>
         </div>}
@@ -223,7 +229,7 @@ const Home = () => {
               <div className="rounded-2xl bg-black h-[450px] md:h-[500px] w-[90%] flex flex-col gap-6 items-center justify-center">
                   <div className="text-2xl md:text-6xl font-bold text-white max-w-[350px] md:max-w-3xl text-center">Ready to transform your meetings?</div>
                   <div className="text-[12px] md:text-lg font-normal text-white max-w-[300px] md:max-w-3xl text-center ">Join users already using Callify for seamless video communication. Start your free trial today.</div>
-                  <button className="text-black bg-white rounded-2xl px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-bold flex items-center gap-2 transition ease-in-out duration-500 hover:scale-110 hover:bg-red-400 cursor-pointer ">Start free trial<ArrowRight className="w-4 h-4 md:w-5 md:h-5"/></button>
+                    <StartFreeTrail/>
               </div>
             </div>
             {/* footer */}

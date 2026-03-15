@@ -46,7 +46,7 @@ export function RoomNameDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div>
+        <div className="md:w-[500px]">
             <Quickactions variant="create"/>
         </div>
       </DialogTrigger>

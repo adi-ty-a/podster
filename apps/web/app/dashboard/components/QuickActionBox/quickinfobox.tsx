@@ -37,7 +37,7 @@ const getquickinfo=async()=>{
         router.push("/login");
     }
 }
-    return  <div className="flex w-[90%] pr-12">
+    return  <div className="flex md:w-[90%] md:pr-12 ml-10 gap-2 mr-10">
                         <Quickinfo data={noOFrooms} tittle="Total_Calls"/>
                         <Quickinfo data={noOFrecordings} tittle="Recordings"/>
             </div>

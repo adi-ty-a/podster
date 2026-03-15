@@ -3,5 +3,7 @@ import HButton from "../components/homebutton";
 
 export function Startpod(){
     const router = useRouter()
-    return <HButton tittle="Start Podcasting" vairant="white" onClick={()=>router.push("/signup")}/>
+    return <HButton tittle="Start Podcasting" vairant="white" onClick={()=>{
+        console.log("start")
+        router.push("/signup")}}/>
 }

@@ -18,10 +18,8 @@ model User {
   username String? @unique
   email String? @unique
   name String?
-  
   password String?
   googleId String? @unique
-
   joinedroom Rooms[] @relation("GuestRooms")
   hostedRooms Rooms[] @relation("HostRooms")
   recordings Recordings[]
@@ -35,7 +33,6 @@ model Recordings{
   status RecordingStatus
   roomId String
   room Rooms @relation(fields: [roomId], references: [id])
-  
   createdById Int
   host User @relation(fields: [createdById],references: [id])
 }
@@ -45,13 +42,10 @@ model Rooms {
   date DateTime @default(now())
   recordings Recordings[] 
   name String
-
   hostId Int 
   host User @relation("HostRooms",fields: [hostId], references: [id])
-
   guestid Int?
   guest User? @relation("GuestRooms",fields: [guestid],references: [id])
-
   @@unique([date, id])
 }
 

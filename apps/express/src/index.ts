@@ -14,7 +14,7 @@ import cookieParser from "cookie-parser";
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID!,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    callbackURL: "http://localhost:3003/google/callback"
+    callbackURL: `http://localhost:3003/callback`
   },
   async function(accessToken, refreshToken, profile, done) {
     try{
@@ -53,7 +53,7 @@ app.get("/google",passport.authenticate("google", {
   })
 );
 
-app.get("/google/callback",passport.authenticate("google", { session: false }),(req:any,res)=>{
+app.get("/callback",passport.authenticate("google", { session: false }),(req:any,res)=>{
         const user=  req.user
         const id = user.id
         const token = jwt.sign({userid:id},process.env.JWT_SECRET!)
@@ -63,7 +63,7 @@ app.get("/google/callback",passport.authenticate("google", { session: false }),(
              secure: false,
               sameSite: "lax",
         })
-        return res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
+        return res.redirect(`http://localhost:3000/dashboard`)
     }
 )
 

@@ -19,7 +19,7 @@ export default function HButton({tittle,vairant,className,...props}:HButtonProps
             </>
         }else{
         return <>
-                <button className={`relative overflow-hidden rounded-lg  px-[16px] py-[10px] text-[12px] text-black w-fit h-fit border-1 bg-white z-2 shadow-[0_3px_50px_rgb(0,0,0,0.1)] hover:scale-105 transition duration-300 ease-in-out ${className}`}>
+                <button {...props} className={`relative overflow-hidden rounded-lg  px-[16px] py-[10px] text-[12px] text-black w-fit h-fit border-1 bg-white z-2 shadow-[0_3px_50px_rgb(0,0,0,0.1)] hover:scale-105 transition duration-300 ease-in-out ${className}`}>
                     {tittle}
                 </button>
             </>
