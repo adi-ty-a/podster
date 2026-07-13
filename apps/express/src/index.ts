@@ -3,38 +3,13 @@ import 'dotenv/config'
 import cors  from "cors";
 import {userRouter} from "./routes/user.js";
 import { roomRouter } from "./routes/rooms.js";
+import { Authrouter } from "./auth.js";
 import { authenticateToken } from "./middleware.js";
 import { s3router } from "./routes/multipartUploads.js";
-import {Strategy as GoogleStrategy } from "passport-google-oauth20";
 import passport from "passport";
-import { prisma } from "./prisma.js"
-import jwt  from "jsonwebtoken";
-import process from "process";
 import cookieParser from "cookie-parser";
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID!,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    callbackURL: `http://localhost:3003/callback`
-  },
-  async function(accessToken, refreshToken, profile, done) {
-    try{
-        const response = await prisma.user.upsert({
-            where: {
-                googleId: profile.id
-            },
-            update: {},
-            create: {
-                googleId: profile.id,
-                email:  profile.emails?.[0]?.value ?? null,
-                name: profile.displayName
-            }
-        })
-        return done(null,response)
-    }catch(e){
-        return done(e)
-    }
-  }
-));
+import { prisma } from "./prisma.js";
+
 const app = express();
 
 app.use(express.json())
@@ -43,60 +18,40 @@ app.use(cors({
     origin: "http://localhost:3000",
     credentials: true
 }))
+
 app.use(passport.initialize());
 
 app.use(cookieParser());
 
-app.get("/google",passport.authenticate("google", {
-    scope: ["profile", "email"],
-    session: false,
-  })
-);
-
-app.get("/callback",passport.authenticate("google", { session: false }),(req:any,res)=>{
-        const user=  req.user
-        const id = user.id
-        const token = jwt.sign({userid:id},process.env.JWT_SECRET!)
-        res.cookie("access_token",token,{
-            httpOnly:true,
-            maxAge:7 * 24 * 60 * 60 * 1000,
-             secure: false,
-              sameSite: "lax",
-        })
-        return res.redirect(`http://localhost:3000/dashboard`)
-    }
-)
-
-app.use("/user",userRouter);
-
-
 app.get("/check", async (req, res) => {
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
-    
     try {
         let usage = await prisma.creds.findUnique({
             where: { date: today }
         });
-        
         if (!usage) {
             usage = await prisma.creds.create({
                 data: { date: today, count: 0 }
             });
         }
-        
         if (usage.count >= 100) {
             throw new Error("Daily limit reached");
-        }
-        
+        }        
         res.json(true);
     } catch (e) {
         res.status(403).json(e);
     }
 });
 
-app.use("/room",authenticateToken,roomRouter);
-app.use("/upload",authenticateToken,s3router);
-console.log("server started");
-app.listen(3003);
+app.use("/user",userRouter);
 
+app.use("/Oauth",Authrouter);
+
+app.use("/room",authenticateToken,roomRouter);
+
+app.use("/upload",authenticateToken,s3router);
+
+console.log("server started");
+
+app.listen(3003);

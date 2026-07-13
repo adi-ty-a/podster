@@ -88,7 +88,7 @@ export default function Login(){
                         Login
                         </Button>
                         <Button variant="outline" className="w-full" onClick={()=>{
-                            window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/google`;
+                            window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/Oauth/google`;
                         }}>
                         Login using <FcGoogle/>
                         </Button>

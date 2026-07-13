@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Creds" ALTER COLUMN "date" SET DATA TYPE DATE;
