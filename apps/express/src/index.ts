@@ -53,5 +53,5 @@ app.use("/room",authenticateToken,roomRouter);
 app.use("/upload",authenticateToken,s3router);
 
 console.log("server started");
-
+console.log(`${process.env.FRONTEND_URL}/Oauth/callback`);
 app.listen(3003);

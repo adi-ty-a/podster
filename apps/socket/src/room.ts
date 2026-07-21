@@ -9,15 +9,28 @@ let GlobalRoomId = 1
 interface rooms {
     user1:user,
     user2?:user,
+    expires?:Date
 }
 
 export class RoomManager {
 
     private Rooms :Map<string,rooms>;
 
-
     constructor(){
         this.Rooms = new Map<string, rooms>()
+        this.isExpired()
+    }
+
+    isExpired=()=>{
+        setInterval(()=>{
+            for( const [key,value] of this.Rooms ) {
+                if(!value.expires)return 
+                if( new Date > value.expires){
+                    this.endcall({roomid:key,socket:value.user1.socket});
+                    if (value.user2) this.endcall({roomid:key,socket:value.user2.socket});
+                }
+            }
+        },1000 * 60);
     }
 
     createRooms(user1:user,roomid:string){
@@ -34,6 +47,7 @@ export class RoomManager {
             return "Roomcreted"
         }else{
         room.user2 = user;
+        room.expires= new Date(Date.now() + 60 * 60 * 1000);
         this.Rooms.set(roomid,room);
         room.user1.socket.emit("send-offer",{
                 type:"send-offer",

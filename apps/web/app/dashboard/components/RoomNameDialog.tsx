@@ -19,7 +19,6 @@ import axios from "axios";
 export function RoomNameDialog() {
     const router =  useRouter()
     const Roomname = useRooom((state)=>state.roomname)
-    const RoomId = useRooom((state)=>state.setrooId);
     const setroomname = useRooom((state)=>state.setroomname) 
     const createroom = async ()=>{
       try{
@@ -31,7 +30,6 @@ export function RoomNameDialog() {
       ) 
       if(res.data.success){
         const roomid = res.data.data.roomId;
-        RoomId(roomid);
         if(Roomname !== null && Roomname.length > 3){
           router.push("/room/"+roomid+"/"+Roomname)
         }

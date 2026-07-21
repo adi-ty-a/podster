@@ -15,9 +15,8 @@ import { UploadingIndicator } from "@/app/components/uploadingIndicator";
 export default function Room() {
   const param = useParams ();
   const room = param.roomid;
-  const roomname = param.Roomname;
-  const setroomname = useRooom((state)=>state.setroomname)  
-  const setroomid = useRooom((state)=>state.setrooId)
+  
+  const setRoomid = useRooom((state)=>state.setrooId);
   const roomid = useRooom((state)=>state.roomId);
   const recorderref = useRef<ReturnType<typeof Recording> | null>(null);
   const localvid = useRef<HTMLVideoElement | null>(null);
@@ -31,30 +30,37 @@ export default function Room() {
   const [islocalVideoEnabled,setisLocalVideoEnabled] = useState(true);
   const setisrecording = useRecording((state)=>state.setisrecording)
   const chat = useChat((state)=>state.chat)
-
-  useEffect(()=>{
-        if(!roomid && room &&  typeof room == "string" && roomname && typeof roomname == "string") {
-            setroomid(room);
-            setroomname(roomname);
-        }
-    },[room])
+    useEffect(()=>{
+      const Id : string|undefined= room?.toString();
+      if(Id){
+        setRoomid(Id);
+      }
+    })
 
     useEffect(()=>{
-      if(!roomid)return
-      setmanager(()=>rtcengine());
+      if(!roomid) return
+       console.log("manager called")
+        const manager = rtcengine();
+        manager.onRemoteStream = (media:MediaStream)=>{setRemoteStream(media)};
+        manager.onIsRemoteVideoEnabled = (value:boolean)=>setisRemoteVideoEnabled(value);
+        manager.onIsLocalVideoEnabled = (value:boolean)=>setisLocalVideoEnabled(value);
+        manager.onUserConnected = (value:boolean)=> setuserconnected(value);
+        manager.onCallback = callback;
+        manager.onCallend = videoStop;
+        setmanager(manager);
       return ()=>{
-        manager?.hangup
+        console.log("removed")
+        manager?.hangup()
       }
     },[roomid])
 
     useEffect(()=>{
         if(!manager) return
         async function fetchmedia(){
-            const MediaStream =await manager?.getmeida();
+            const MediaStream =await manager?.getmedia();
             if(MediaStream && localvid.current && roomid){
                 setlocalmedia(MediaStream);
                 localvid.current.srcObject = MediaStream;
-                manager?.setcallback(setcallback,videoStop,setuserconnected,Remotestream,setisRemoteVideoEnabled,setisLocalVideoEnabled);
                 manager?.joinroom(roomid);
             }
         }
@@ -77,7 +83,7 @@ export default function Room() {
     },[remoteStream])
     
 
-    const setcallback=(data:boolean)=>{
+    const callback=(data:boolean)=>{
       setreqcall(data)
     }
 
@@ -92,11 +98,6 @@ export default function Room() {
     const triggerRecord=()=>{
       recorderref.current?.startrecording()
     }
-
-    function Remotestream(media:MediaStream){
-      setRemoteStream(media)
-    }
-    
 
     const renderRemoteVideo = () => {
         if (!userconnected) {

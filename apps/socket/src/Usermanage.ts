@@ -14,18 +14,16 @@ export class User {
     constructor(){
         this.Users = [];
         this.roomhandler =  new RoomManager();
+        this.roomhandler.isExpired();
     }
+    
     adduser(name:string, socket:Socket){
         this.Users.push({name,socket});
     }
+
     removeuser(socketid:string){
         this.Users = this.Users.filter(x => x.socket.id !== socketid);
     }
-    // createroom(socket:Socket){
-    //     const roomid =  this.roomhandler.createRooms({socket,name:"user1"});
-    //     socket.data.roomid = roomid;
-    //     socket.emit("roomid",roomid,"user1");
-    // }
 
     joinroom(socket:Socket,roomid:string){
         const cookies = cookie.parse(socket.handshake.headers.cookie! || "");
@@ -40,7 +38,6 @@ export class User {
 
     initHandler(socket:Socket){
         socket.on("msg",({roomid,msg})=>{
-            console.log(roomid)
             this.roomhandler.onmessage({roomid,socket,msg});
         })
         socket.on("video-state",({state}:{state:boolean})=>{
@@ -70,6 +67,8 @@ export class User {
             this.roomhandler.endcall({roomid,socket});
             socket.emit("room-closed")
         })
+
+        // sending disconnect from frontend 
         socket.on("disconnect",(reason)=>{
             console.log(reason);
             this.removeuser(socket.id)

@@ -14,6 +14,7 @@ export class rtc{
     private initaotr!:boolean
     private track : MediaStream
     private onRemoteStream?:(stream:MediaStream)=>void;
+
     constructor( track:MediaStream,socket:Socket,onRemoteStream:(stream:MediaStream)=>void){
         this.socket = socket
         this.track = track
@@ -21,63 +22,60 @@ export class rtc{
     }
 
     async createPeerConnection(initaotr:boolean,roomid?:string ){
-    this.initaotr = initaotr
-    if(roomid){
-    this.roomid = roomid
+        if (roomid)this.roomid = roomid;
+        this.initaotr = initaotr
+        this.pc = new RTCPeerConnection(
+                            {
+                iceServers: [
+                    {
+                    urls: "stun:stun.l.google.com:19302"
+                    }
+                ]
+}
+        );
+        this.pc.onicecandidate =  this.handleICECandidateEvent;
+        this.pc.ontrack =  this.handletrack;
+        this.track.getTracks().forEach(track => this.pc.addTrack(track, this.track));
+        if(this.initaotr == true){
+            this.pc.onnegotiationneeded = this.handleNegotiationNeededEvent;
+        }
     }
-    
-    this.pc = new RTCPeerConnection();
 
-    this.pc.onicecandidate =  this.handleICECandidateEvent.bind(this);
-    this.pc.ontrack =  this.handletrack.bind(this);
-    this.track.getTracks().forEach(track => this.pc.addTrack(track, this.track));
-    if(this.initaotr == true){
-    this.pc.onnegotiationneeded = this.handleNegotiationNeededEvent.bind(this);
-    }
-
-    }
-
-    handleICECandidateEvent(e:any){
-    if(e.candidate){
+    handleICECandidateEvent=(e:RTCPeerConnectionIceEvent)=>{
         this.sendToServer({
             type: "new-ice-candidate",
             roomid:this.roomid,
             candidate: e.candidate,     
             })
-        }
     }
 
-    handletrack(event:any)  {
+    handletrack=(event:RTCTrackEvent)=>{
             const remoteStream =  event.streams[event.streams.length - 1];
-            // const remoteVideo = document.querySelector("video#remote") as HTMLVideoElement;
-            // if(remoteVideo){
-            //     remoteVideo.srcObject=remoteStream
-            // }
-            if(this.onRemoteStream){
-                this.onRemoteStream(remoteStream);
-            }
-            remoteStream.onremovetrack  = this.handleRemoveTrackEvent.bind(this);
+            if (!remoteStream) return 
+            if(!this.onRemoteStream) return
+            this.onRemoteStream(remoteStream);
+            remoteStream.onremovetrack  = this.handleRemoveTrackEvent;
     }
 
-    handleRemoveTrackEvent(event:any){
+    handleRemoveTrackEvent=()=>{
         const stream = document.getElementById("video#remote") as HTMLVideoElement;
         if(stream.srcObject instanceof MediaStream){
-        const streamobject = stream.srcObject.getTracks
-
+        const streamobject = stream.srcObject.getTracks()
+        
             if(streamobject.length == 0){
                  this.closeVideoCall();
             }
         }
     }
 
-    async handleNegotiationNeededEvent(){
+    handleNegotiationNeededEvent=async ()=>{
         const offer  = await this.pc.createOffer()
         await this.pc.setLocalDescription(offer)
         this.sendToServer({
             type: "offer",
             roomid:this.roomid,
             sdp: this.pc.localDescription,
-        });
+        }); 
 
     }
 
@@ -85,10 +83,6 @@ export class rtc{
         await this.createPeerConnection(false)
         const dsec = new RTCSessionDescription(msg.sdp);
         await this.pc.setRemoteDescription(dsec);
-        const tracks = await navigator.mediaDevices.getUserMedia({video:true,audio:true})
-         tracks.getTracks().forEach(element => {
-                    this.pc.addTrack(element)
-        });
         const answer =  await this.pc.createAnswer();
         await this.pc.setLocalDescription(answer);
         const res ={
@@ -97,17 +91,14 @@ export class rtc{
         sdp: this.pc.localDescription,
         }
         this.sendToServer(res);
-
     }
 
     async handleVideoAnswerMsg(msg :any) {
-    const desc = new RTCSessionDescription(msg.sdp);
-    await this.pc.setRemoteDescription(desc).catch(window.reportError);
+        const desc = new RTCSessionDescription(msg.sdp);
+        await this.pc.setRemoteDescription(desc).catch(window.reportError);
     }
 
      handleNewICECandidateMsg(msg: any){
-        if(!this.pc){
-        }
         const candidate =  new RTCIceCandidate(msg.candidate);
         this.pc.addIceCandidate(candidate)
     }
@@ -120,17 +111,17 @@ export class rtc{
     }
     
     closeVideoCall(){
-        if(this.pc){
-            this.pc.ontrack = null
-            this.pc.onicecandidate = null
-            this.pc.onnegotiationneeded= null
-            const senderlist = this.pc.getSenders()
-            senderlist.forEach((e)=>{
-                e.track?.stop()
-            })
-            this.pc.close()
-        }
+        this.pc.ontrack = null
+        this.pc.onicecandidate = null
+        this.pc.onnegotiationneeded= null
+        const senderlist = this.pc.getSenders()
+        senderlist.forEach((e)=>{
+            e.track?.stop()
+        })
+        this.pc.close()
     }
+    
+
     sendToServer(msg :any){
         this.socket.emit(msg.type
             ,msg)

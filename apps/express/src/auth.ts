@@ -49,6 +49,6 @@ Authrouter.get("/callback",passport.authenticate("google", { session: false }),(
          secure: false,
           sameSite: "lax",
     })
-    return res.redirect(`${process.env.BACKEND_URL}/dashboard`)
+    return res.redirect(`${process.env.FRONTEND_URL}/dashboard`)
 }
 )
