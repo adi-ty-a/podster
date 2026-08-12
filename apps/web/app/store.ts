@@ -1,4 +1,20 @@
 import { create } from "zustand"
+
+type videoRender={
+    isRemoteVideoEnabled:boolean,
+    islocalVideoEnabled:boolean,
+    setisRemoteVideoEnabled:(value:boolean)=>void;
+    setislocalVideoEnabled:(value:boolean)=>void;
+}
+
+export const useVideoRender= create<videoRender>((set)=>({
+    isRemoteVideoEnabled:true,
+    islocalVideoEnabled:true,
+    setisRemoteVideoEnabled:(value:boolean)=>set(()=>({isRemoteVideoEnabled:value})),
+    setislocalVideoEnabled:(value:boolean)=>set(()=>({islocalVideoEnabled:value})),
+    })
+    )
+
 type room={
     roomId:string | undefined,
     roomname:string ,

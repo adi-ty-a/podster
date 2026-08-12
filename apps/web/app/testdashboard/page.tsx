@@ -6,13 +6,13 @@ import { UploadingIndicator } from "../components/uploadingIndicator"
 import ToggleNavBox from "./components/navbox"
 import RecordingsBox from "./components/RecBox/recordingsBox"
 import QuickinfoBoxs from "./components/QuickActionBox/quickinfobox"
+import { Nexticon } from "./components/nexticon"
 
 export type RoomsWRecordings = {
     name:string,
     date:string,
     roomId:string
 }
-
 export default function Dashboard(){
 
 return <>
@@ -36,15 +36,25 @@ return <>
                 <div className="h-px mt-12 mx-6 bg-[#E5E7EB]"></div>
                 <Nav_box tittle="help"/>
             </div>
-            <div className="flex flex-col gap-2 w-full">
-                <Header tittle="Dashboard" size="sm"/>
-                <div className="font-semibold text-lg ml-10 mt-6">Quick Actions</div>
+            <div className="flex flex-col gap-2 w-full bg-">
+                <Header tittle="Welcome avi" size="sm"/>
+                <div className="font-semibold text-lg ml-10 mt-6">Overview</div>
                 <div className="flex w-full md:gap-12">
                     <RoomNameDialog/>
                     <Quickactions variant="join" />
                 </div>
                 <QuickinfoBoxs/>
-            <div className="font-semibold text-lg ml-10 my-10">Recordings</div>
+            <div className="font-semibold text-lg ml-10 my-5 flex gap-6">Recordings 
+            <div className="w-fit flex items-center justify-center bg-[#F0F0F0] rounded-2xl">
+                <div className="bg-[#F0F0F0] pl-3 pr-2 py-2 rounded-l-2xl hover:bg-black">
+                    <Nexticon className="-scale-x-100"/>
+                </div>
+                <div className="bg-black/20 h-[60%] w-[1px]"></div>
+                 <div className="bg-[#F0F0F0] pr-3 pl-2 py-2 rounded-r-2xl hover:bg-black">
+                    <Nexticon/>
+                 </div>
+            </div>
+            </div>
                 <RecordingsBox/>
             </div>
         </div>

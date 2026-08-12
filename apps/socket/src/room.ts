@@ -44,11 +44,13 @@ export class RoomManager {
         const room = this.Rooms.get(roomid);
         if(!room){
             this.createRooms(user,roomid)
+            console.log(this.Rooms);
             return "Roomcreted"
         }else{
         room.user2 = user;
         room.expires= new Date(Date.now() + 60 * 60 * 1000);
         this.Rooms.set(roomid,room);
+                    console.log(this.Rooms);
         room.user1.socket.emit("send-offer",{
                 type:"send-offer",
                 roomid: roomid
@@ -88,9 +90,6 @@ export class RoomManager {
 
     onmessage({roomid,socket,msg}:{roomid:string,socket:Socket,msg:string}){
         const room = this.Rooms.get(roomid);
-        console.log("room found ?")
-        console.log(room)
-        console.log(this.Rooms);
         if(room){
             if(socket.id == room.user1.socket.id){
                 room.user2?.socket.emit("msg",msg);
@@ -105,57 +104,46 @@ export class RoomManager {
     }
 
     requestingPermission({roomid,socket}:{roomid:string,socket:Socket}){
-        const room = this.Rooms.get(roomid)
-        if(room){
-            const user = Object.values(room).find(u => u.socket.id != socket.id)
-            if (!user) return;
-                user.socket.emit("record-permission");
-
-        }
+        const user = this.getOtherUser(socket,roomid);
+        if (!user) return socket.emit("no other party");
+        user.socket.emit("record-permission");
     }
 
     record_response({roomid,socket,permission}:{roomid:string,socket:Socket,permission:boolean}){
-        const room = this.Rooms.get(roomid)
-        console.log(socket.id);
-        if(room){
-            const user = Object.values(room).find(u => u.socket.id != socket.id)
-            if (!user) return;
-                user.socket.emit("record-response",{permission});
-        }
+        const user = this.getOtherUser(socket,roomid);
+        if (!user) return;
+        user.socket.emit("record-response",{permission});
+        
     } 
 
     endrecording({roomid,socket}:{roomid:string,socket:Socket}){
-        const room = this.Rooms.get(roomid)
-        console.log(socket.id);
-        if(room){
-            const user = Object.values(room).find(u => u.socket.id != socket.id)
-            if (!user) return;
-                user.socket.emit("end_recording");
-        }
+        const user = this.getOtherUser(socket,roomid);
+        if (!user) return;
+        user.socket.emit("end_recording");
+        
     } 
     endcall({roomid,socket}:{roomid:string,socket:Socket}){
-        const room = this.Rooms.get(roomid)
-        if(room){
-            const user = Object.values(room).find(u => u.socket.id != socket.id)
-            if (user){
-                return user.socket.emit("hangup");
-                }else{
-                     return socket.emit("no user in room or no room found");
-                 }
-        }
+        const user = this.getOtherUser(socket,roomid);
+        if (!user) return socket.emit("no user in room or no room found");
+        return user.socket.emit("hangup");
+        
     }
 
     handlevideostate({socket,roomid,state}:{socket:Socket,roomid:string,state:boolean}){
-        const room = this.Rooms.get(roomid);
-        if(!room) return 
-        const user = Object.values(room).find((s)=> s.socket.id != socket.id)
-        if(user){
-            user.socket.emit("video-state",{state});
-        }else{
-            socket.emit("no user found")
-        }
-
+        const user = this.getOtherUser(socket,roomid)
+        if(!user) socket.emit("no user found")
+        user.socket.emit("video-state",{state});
     }   
+
+    getRoom(roomid:string):rooms|undefined{
+        return this.Rooms.get(roomid);
+    }
+
+    getOtherUser(socket:Socket,roomid:string){
+        const room = this.getRoom(roomid);
+        if(!room) return undefined
+        return Object.values(room).find((s)=> s.socket.id != socket.id);
+    }
 
     generate(){
         return GlobalRoomId++;

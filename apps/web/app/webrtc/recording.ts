@@ -11,11 +11,9 @@ export const Recording = (strean:MediaStream,):{
     let recorder = new MediaRecorder(strean);
     const data = <Blob[]>([]); 
     const startrecording=()=>{
-         console.log("starts recording")
         if(recorder){
             recorder.ondataavailable = recordchunks
             recorder.start()
-            console.log("started recording")
         }
     }
 
@@ -24,7 +22,6 @@ export const Recording = (strean:MediaStream,):{
     }
     
     const stopRecording = ()=>{
-        console.log("stoped recording")
         return new Promise<{videoBlob:Blob,videoUrl:string}>((resolve)=>{
         recorder.stop()
         recorder.onstop = ()=>{
@@ -34,14 +31,11 @@ export const Recording = (strean:MediaStream,):{
                 startuploading(videoFile);
             }
             const videoUrl =URL.createObjectURL(videoBlob);
-            console.log(room.roomname);
             resolve({videoUrl,videoBlob})
             } 
         data.length = 0;
         })
     }
-
-
-
+    
     return {startrecording,stopRecording}
 }

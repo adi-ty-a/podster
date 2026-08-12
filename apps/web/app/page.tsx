@@ -17,7 +17,7 @@ export default function Home() {
     <div className="bg-[#100512] w-screen h-screen  overflow-hidden text-white">
       <div className="flex justify-center items-center mt-[25vh] gap-6">
         <button className="bg-[#28002b] text-[#fad9fc] rounded-md w-fit h-fit px-2 py-3 shadow-[0_8px_30px_#18101a]" onClick={()=>{
-          router.push("/room/"+roomid)
+          router.push("/testingRoom/"+roomid+"/abcd")
         }}>Create</button>
       </div>
     </div>

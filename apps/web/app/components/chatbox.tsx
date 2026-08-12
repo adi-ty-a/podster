@@ -2,17 +2,17 @@ import { Send } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { webrtcmanager } from "../webrtc/rtcmanager";
 import { rtcengine } from "../webrtc/connectionlogic";
+import { Manager } from "../webrtc/managers/webRtcManager";
 
 interface chats{
   user:"user1"|"user2",
   msg:string
 }
 
-export default function Chatbox() {
+export default function Chatbox({manager}:{manager:Manager|null}) {
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatbottom = useRef<HTMLDivElement | null>(null);
-  const [manager,setmanager]= useState<webrtcmanager|undefined>(undefined);
   const [chats,setchats]=useState<chats[]>([]);
   // Auto-resize textarea as content grows
 
@@ -25,21 +25,13 @@ export default function Chatbox() {
   }, [message]);
 
   useEffect(()=>{
-    setmanager(()=> rtcengine())
-  },[])
-
-  useEffect(()=>{
-      const messagemanager=()=>{
-        manager?.server.on("msg",(data)=> {
-          console.log('yo boy')
-          console.log(data);
-        setchats((prev:chats[])=> [...prev,{user:"user2",msg:data}])
-          })
-      }
-    if(manager){
-      messagemanager();
-    }
-  },[manager])
+    const callBack =(data:any)=> {
+          setchats((prev:chats[])=> [...prev,{user:"user2",msg:data}])
+            }
+    manager?.chat.setCallback(callBack);
+    return ()=>manager?.chat.removeCallback(callBack)
+  },[manager]);
+  
   
   return (
     <div className="flex flex-col bg-white w-[30%]  min-w-[300px] h-full border-l">
@@ -81,8 +73,9 @@ export default function Chatbox() {
           </div>
             <button className="flex items-center justify-center rounded-lg bg-[#1F2224] w-fit text-xl px-3 py-3 scale-90 text-white"
             onClick={()=>{
-              if(manager)
-                manager.sendmsg(message)
+              console.log(manager)
+              if(!manager) return
+              manager.chat.sendmsg(message)
               setchats((prev:chats[])=> [...prev,{user:"user1",msg:message}])
             }}
             >

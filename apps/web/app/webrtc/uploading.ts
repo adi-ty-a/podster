@@ -21,7 +21,6 @@ export const UploadingRecording = ():{
     const filename = useRecording.getState().setFileName;
     const setisUploading = useRecording.getState().setUploading;
     const roomid = useRooom.getState().roomId; 
-    console.log(roomid);
     const gettoken=()=>{
     return localStorage.getItem("token");
     }

@@ -1,4 +1,4 @@
-import { Socket } from "socket.io-client";
+import { socketManager } from "./managers/socketmanager";
 
 interface chat{
     chat:{
@@ -9,13 +9,12 @@ interface chat{
 
 export class rtc{
     private pc! : RTCPeerConnection 
-    private socket :Socket
-    public roomid!: string
+    private socket :socketManager
     private initaotr!:boolean
-    private track : MediaStream
+    private track:()=>Promise<MediaStream>;
     private onRemoteStream?:(stream:MediaStream)=>void;
-
-    constructor( track:MediaStream,socket:Socket,onRemoteStream:(stream:MediaStream)=>void){
+    public iceCandidateBuffer: any= []
+    constructor( track:()=>Promise<MediaStream>,socket:socketManager,onRemoteStream:(stream:MediaStream)=>void,public roomid: string){
         this.socket = socket
         this.track = track
         this.onRemoteStream = onRemoteStream;
@@ -35,14 +34,16 @@ export class rtc{
         );
         this.pc.onicecandidate =  this.handleICECandidateEvent;
         this.pc.ontrack =  this.handletrack;
-        this.track.getTracks().forEach(track => this.pc.addTrack(track, this.track));
+        const tracks = await this.track()
+        tracks.getTracks().forEach(track => this.pc.addTrack(track,tracks));
         if(this.initaotr == true){
             this.pc.onnegotiationneeded = this.handleNegotiationNeededEvent;
         }
     }
 
     handleICECandidateEvent=(e:RTCPeerConnectionIceEvent)=>{
-        this.sendToServer({
+            if (!e.candidate) return; 
+           this.sendToServer({
             type: "new-ice-candidate",
             roomid:this.roomid,
             candidate: e.candidate,     
@@ -76,14 +77,14 @@ export class rtc{
             roomid:this.roomid,
             sdp: this.pc.localDescription,
         }); 
-
     }
 
-    async handleVideoOfferMsg(msg : any){
+    async handleOffer(msg : any){
         await this.createPeerConnection(false)
         const dsec = new RTCSessionDescription(msg.sdp);
         await this.pc.setRemoteDescription(dsec);
         const answer =  await this.pc.createAnswer();
+        this.flushPendingCandidates();
         await this.pc.setLocalDescription(answer);
         const res ={
         type: "answer",
@@ -93,14 +94,24 @@ export class rtc{
         this.sendToServer(res);
     }
 
-    async handleVideoAnswerMsg(msg :any) {
+    async handlAnswer(msg :any) {
         const desc = new RTCSessionDescription(msg.sdp);
         await this.pc.setRemoteDescription(desc).catch(window.reportError);
+        this.flushPendingCandidates();
     }
 
-     handleNewICECandidateMsg(msg: any){
+    handleNewICECandidateMsg(msg: any){
+        if(!this.pc || !this.pc.remoteDescription) {
+            this.iceCandidateBuffer.push(msg.candidate);
+            return
+        }
         const candidate =  new RTCIceCandidate(msg.candidate);
         this.pc.addIceCandidate(candidate)
+    }
+
+    flushPendingCandidates(){
+        this.iceCandidateBuffer.forEach(c=> this.pc.addIceCandidate(new RTCIceCandidate(c)));
+        this.iceCandidateBuffer = [];
     }
 
     hangupcall(){

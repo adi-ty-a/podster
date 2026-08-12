@@ -1,13 +1,12 @@
 "use client"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CheckCircle2Icon } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { useRecording, useRooom } from "../store"
 import { AnimatePresence, motion } from "motion/react"
 export function UploadingIndicator() {
     const filename = useRecording((state)=>state.filename)
         const uploadprogress = useRecording((state)=>state.recordingProgress);
-        const isUploading = useRecording((state)=>state.isUploading);
+        const {isUploading} = useRecording();
         
   return  <AnimatePresence>
           {isUploading && 

@@ -1,80 +1,87 @@
 import type { Socket } from "socket.io";
 import { RoomManager } from "./room.js";
-import cookie from "cookie"
-import jwt from "jsonwebtoken";
-import process from "process";
-export interface user{
-    socket:Socket,
-    name:string,
+export interface user {
+    socket: Socket,
+    name: string,
 }
 
 export class User {
-    private Users:user[];
-    private roomhandler :RoomManager
-    constructor(){
+    private Users: user[];
+    private roomhandler: RoomManager
+    constructor() {
         this.Users = [];
-        this.roomhandler =  new RoomManager();
+        this.roomhandler = new RoomManager();
         this.roomhandler.isExpired();
     }
-    
-    adduser(name:string, socket:Socket){
-        this.Users.push({name,socket});
+
+    adduser(name: string, socket: Socket) {
+        this.Users.push({ name, socket });
     }
 
-    removeuser(socketid:string){
+    removeuser(socketid: string) {
         this.Users = this.Users.filter(x => x.socket.id !== socketid);
     }
 
-    joinroom(socket:Socket,roomid:string){
-        const cookies = cookie.parse(socket.handshake.headers.cookie! || "");
-        const RoomToken = cookies.RoomToken
-        if(!RoomToken) return socket.disconnect();
-        const jwtResponse :any= jwt.verify(RoomToken!,process.env.JWT_SECRET!)
-        if(jwtResponse.roomid !== roomid) return socket.disconnect(); 
-        const res = this.roomhandler.joinroom(roomid,{socket,name:"user2"});
+    // joinroom(socket:Socket,roomid:string){
+    //     const cookies = cookie.parse(socket.handshake.headers.cookie! || "");
+    //     const RoomToken = cookies.RoomToken
+    //     if(!RoomToken){
+    //         console.log("cookie")
+    //         return socket.disconnect()};
+    //     const jwtResponse :any= jwt.verify(RoomToken!,process.env.JWT_SECRET!)
+    //     if(jwtResponse.roomid !== roomid) {
+    //         console.log("socket jwt");
+    //         return socket.disconnect()}; 
+    //     const res = this.roomhandler.joinroom(roomid,{socket,name:"user2"});
+    //     socket.data.roomid = roomid;
+    //     socket.emit("joined",res)
+    // }
+    joinroom(socket: Socket, roomid: string) {
+        const res = this.roomhandler.joinroom(roomid, { socket, name: "user2" });
         socket.data.roomid = roomid;
-        socket.emit("joined",res)
+        socket.emit("joined", res)
     }
 
-    initHandler(socket:Socket){
-        socket.on("msg",({roomid,msg})=>{
-            this.roomhandler.onmessage({roomid,socket,msg});
+
+    initHandler(socket: Socket) {
+        socket.on("msg", ({ roomid, msg }) => {
+            this.roomhandler.onmessage({ roomid, socket, msg });
         })
-        socket.on("video-state",({state}:{state:boolean})=>{
-            const roomid =socket.data.roomid
-            this.roomhandler.handlevideostate({socket,state,roomid});
+        socket.on("video-state", ({ state }: { state: boolean }) => {
+            const roomid = socket.data.roomid
+            this.roomhandler.handlevideostate({ socket, state, roomid });
         })
-        socket.on("offer",({roomid,sdp}:{roomid:string,sdp:string})=>{
-            this.roomhandler.onOffer(roomid,sdp);
+        socket.on("offer", ({ roomid, sdp }: { roomid: string, sdp: string }) => {
+            this.roomhandler.onOffer(roomid, sdp);
         })
-        socket.on("answer",({roomid,sdp}:{roomid:string,sdp:string})=>{
-            this.roomhandler.onAnswer(roomid,sdp);
+        socket.on("answer", ({ roomid, sdp }: { roomid: string, sdp: string }) => {
+            console.log(roomid);
+            this.roomhandler.onAnswer(roomid, sdp);
         })
-        socket.on("new-ice-candidate",({roomid,candidate}:{roomid:string,candidate:RTCIceCandidate})=>{
-            this.roomhandler.onIceCandidate({roomid,candidate,socket});
+        socket.on("new-ice-candidate", ({ roomid, candidate }: { roomid: string, candidate: RTCIceCandidate }) => {
+            this.roomhandler.onIceCandidate({ roomid, candidate, socket });
         })
-        socket.on("request-permission",({roomid}:{roomid:string})=>{
-            this.roomhandler.requestingPermission({roomid,socket})
+        socket.on("request-permission", ({ roomid }: { roomid: string }) => {
+            this.roomhandler.requestingPermission({ roomid, socket })
         })
-        socket.on("permission-response",({roomid,permission}:{roomid:string,permission:boolean})=>{
-            this.roomhandler.record_response({roomid,socket,permission})
+        socket.on("permission-response", ({ roomid, permission }: { roomid: string, permission: boolean }) => {
+            this.roomhandler.record_response({ roomid, socket, permission })
         })
-        socket.on("end_recording",({roomid}:{roomid:string})=>{
-            this.roomhandler.endrecording({roomid,socket});
+        socket.on("end_recording", ({ roomid }: { roomid: string }) => {
+            this.roomhandler.endrecording({ roomid, socket });
         })
-        socket.on("hangup",async ({roomid}:{roomid:string})=>{
+        socket.on("hangup", async ({ roomid }: { roomid: string }) => {
             await this.removeuser(socket.id)
-            this.roomhandler.endcall({roomid,socket});
+            this.roomhandler.endcall({ roomid, socket });
             socket.emit("room-closed")
         })
 
-        // sending disconnect from frontend 
-        socket.on("disconnect",(reason)=>{
-            console.log(reason);
+        socket.on("disconnect", (reason) => {
+            console.log("Disconnected:", reason);
             this.removeuser(socket.id)
             const roomid = socket.data.roomid
-            if(roomid){
-                this.roomhandler.endcall({roomid,socket});
+            if (roomid) {
+                this.roomhandler.endcall({ roomid, socket });
             }
         })
     }

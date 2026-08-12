@@ -1,16 +1,9 @@
 "use client"
 import { Mic, Phone } from "lucide-react"
 import { Video } from "lucide-react"
-import { User } from "lucide-react"
-import PauseIcon from '@mui/icons-material/Pause';
-import CallEndIcon from '@mui/icons-material/CallEnd';
-import { SendHorizonal } from "lucide-react"
-import { MessageCircle } from "lucide-react"
 import { motion } from "motion/react"
 import JoinPodcastBtn from "./buttoncomponet"
 import { Badge } from "../components/badge"
-import { ArrowRight } from "lucide-react"
-import { FaPlay } from "react-icons/fa";
 import { Startpod } from "./startpod"
 import { WatchDemo } from "./watchDemo"
 import { Socials } from "./socials"
@@ -19,8 +12,9 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { StartFreeTrail } from "./startfreetrial";
-
-
+import FeatureSection from "../testupload/page";
+import { Chatbox, ClearnUi } from "./features";
+import { TextAnimate } from "../components/text-animate";
 
 const Home = () => {
   const [show,setclose] = useState(false);
@@ -34,9 +28,9 @@ const Home = () => {
                   <div className="text-lg text-[#6D6D6D]">About</div>
           </div>
         </div>}
-          <div className=" bg-[#FAFDFF] h-full max-w-[1200px] w-screen p-1 flex flex-col items-center">
+          <div className=" bg-[#FAFDFF] h-full max-w-[1200px] w-screen pt-1 px-1 pb-0 flex flex-col items-center">
             {/* headernav */}
-              <div className="sticky top-0 w-screen border-b flex justify-center bg-white/90 backdrop-blur-lg z-20 ">
+              <div className="relative top-0 w-screen border-b flex justify-center bg-white/90 backdrop-blur-lg z-20 ">
                 <div className="relative flex w-[90%] md:w-[80%] max-w-[1200px] justify-between items-center px-6 py-3  border-black/20">
                 <div className="flex items-center justify-between gap-[20px]">
                 <div className="relative  size-[40px] rounded-[14px] overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
@@ -151,80 +145,57 @@ const Home = () => {
               </div>
             </div>
             {/* features */}
-            <div className="h-fit md:h-[800px] py-10 w-screen bg-[#F0F3F5] flex flex-col items-center justify-center gap-[60px]">
-              <div className="flex flex-col items-center justify-center gap-3">
-                <div className="flex flex-col items-center justify-center">
-                    <div className="text-black text-2xl md:text-3xl font-bold">Everything you need for</div>
-                    <div className="text-2xl md:text-3xl font-bold text-[#737373]">seamless meetings</div>
-                </div>
-              <div className="">
-              <div className="md:w-[620px] w-[300px] text-[12px] font-semibold text-center text-black/50">Powerful features designed to make your video calls more productive, secure, and enjoyable.</div>
+            <div className="h-fit py-[200px] w-screen bg-black flex flex-col items-center justify-center gap-[60px]">
+              <div className="flex flex-col items-center justify-center gap-3 size-fit pb-[120px]">
+                <div className="text-[38px] leading-[38px] font-bold text-center bg-[linear-gradient(180deg,_#fff_-12%,_#9F9F9F_134%)] bg-clip-text text-transparent">Build for Conversations</div>
+                <div className="text-[24px] leading-[24px] font-bold text-center bg-[linear-gradient(180deg,_#fff_-12%,_#9F9F9F_134%)] bg-clip-text text-transparent ">That Matter</div>
               </div>
-              </div>
-              <div className="w-fit max-w-[1200px] flex gap-8 md:[perspective:1000px] flex-col md:flex-row">
-              {/* cleanui */}
-                  <div className="w-[300px] md:w-[340px] h-[400px] md:h-[450px] bg-black rounded-4xl md:transform md:rotate-y-40 md:-rotate-x-10 md:hover:rotate-x-0 md:hover:rotate-y-0 md:hover:scale-110 transition ease-in-out duration-300 mx-auto">
-                      <div className="relative w-full h-[85%] bg-white rounded-3xl  flex flex-col items-center justify-center gap-2 ">
-                        <div className="absolute bg-[#FFC9C9] w-[45px] md:w-[50px] h-[35px] md:h-[40px] z-2 rounded-lg flex items-center justify-center text-red-700 text-base md:text-lg top-4 right-5"> live</div>
-                      <div className=" bg-[#D9D9D9] relative h-[80%] w-[90%] rounded-tl-[12px] rounded-tr-none rounded-bl-[12px] rounded-br-[12px]  flex items-center justify-center ">
-                          <div className=" cleanui absolute bg-white w-[55px] md:w-[60px] h-[45px] md:h-[50px] top-0 right-0 rounded-bl-[12px] "></div>
-                          <img className="translate scale-80" src="UserIcon.png" alt="" />
+              <div className="w-screen h-full flex md:[perspective:1000px] flex-col items-center justify-center bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.2)_0_6px,transparent_6px_12px),repeating-linear-gradient(90deg,rgba(255,255,255,0.2)_0_6px,transparent_6px_12px)] bg-[length:100%_1px,100%_1px] bg-[position:top,bottom] bg-no-repeat">
+                  <div className="flex h-full w-full bg-[repeating-linear-gradient(90deg,rgba(255,255,255,0.2)_0_6px,transparent_6px_12px)] bg-[length:100%_1px] bg-[position:bottom] bg-no-repeat">
+                    <div className="flex-[1.1] py-[80px] h-full flex justify-end pr-[90px]">
+                      <ClearnUi/>
+                    </div>
+                    <div className="w-[1px] bg-[repeating-linear-gradient(180deg,rgba(255,255,255,0.2)_0_6px,transparent_6px_12px)] bg-[length:1px_100%] bg-right bg-no-repeat"></div>
+                    <div className="flex-1 flex flex-col justify-center pl-[80px] gap-[20px] -translate-y-10">
+                        <div className="text-[#ACACAC] w-[60%]">
+                          <div className="-translate-x-4 -translate-y-1 size-[15px] bg-[#404040]"/>
+                          <TextAnimate className="text-white"  animation="blurInUp" by="word" delay={0.8}>
+                            Forget complicated setups and endless configuration. Create a room, share a link, and start your meeting instantly—no downloads, no technical hurdles.
+                          </TextAnimate>
                         </div>
-                        <div className="w-full px-4 flex gap-2 justify-between">
-                            <div className="flex gap-2">
-                              <div className="bg-black size-[35px] md:size-[40px] rounded-lg flex items-center justify-center">
-                                <User color="white" className="w-4 h-4 md:w-5 md:h-5"/>
-                              </div>
-                              <div className="font-bold text-sm md:text-base">@avi</div>
-                            </div>
-                            <div className="text-xs md:text-sm text-[#999999] pr-2">12m ago</div>
+                        <div className="text-[#ACACAC] w-[60%]">
+                          <div className="-translate-x-4 -translate-y-1 size-[15px] bg-[#404040]"/>
+                          <TextAnimate className="text-white" animation="blurInUp" by="word" delay={1.6}>
+                            Create. Share. Connect. Secure, high-quality video meetings with just a single link
+                          </TextAnimate>
                         </div>
-                      </div>
-                      <div className="text-white w-full flex items-center justify-center pt-2 text-xl md:text-2xl">
-                        Clean UI
-                      </div>
-                  </div>
-                <div className="flex flex-col gap-2">
-                  
-                  <div className="w-[300px] md:w-[340px] h-[400px] md:h-[450px] bg-white flex flex-col items-center justify-center rounded-2xl shadow-[0_0px_px_rgb(0,0,0,0.1)] md:hover:scale-110 md:transition ease-in-out duration-300 mx-auto">
-                    <div className="w-[80%] h-[170px] md:h-[200px] rounded-3xl bg-[#D9D9D9] flex items-center justify-center ">
-                      <FaPlay size={50} className="md:w-[60px] md:h-[60px]"/>
-                    </div>
-                    <div className="w-[300px] md:w-[340px] h-[90px] md:h-[100px] rounded-2xl bg-white flex items-center justify-center gap-3 px-6">
-                        <div className="h-[45px] md:h-[50px] w-[70px] md:w-[80px] bg-[#D9D9D9] rounded-2xl flex items-center justify-center"><CallEndIcon style={{ color: "#1D1B20", fontSize: "26px"  }} className="md:text-[30px]" /></div>
-                        <div className="h-[45px] md:h-[50px] w-[70px] md:w-[80px] bg-[#FF9494] rounded-2xl flex items-center justify-center"> <div className="size-[26px] md:size-[30px] rounded-full bg-radial from-white to-50% to-red-500"></div> </div>
-                        <div className="h-[45px] md:h-[50px] w-[70px] md:w-[80px] bg-[#D9D9D9] rounded-2xl flex items-center justify-center"><PauseIcon style={{ color: "#1D1B20", fontSize: "26px"  }} className="md:text-[30px]" /></div>
-                    </div>
-                    <div className="relative flex flex-col justify-center gap-2 h-[100px] md:h-[110px] items-start w-[85%] bg-black rounded-xl p-4">
-                      <span className=" absolute h-[45%] bg-linear-to-b from-white/50 via-white/10 to-transparent left-0 w-full -top-3"></span>
-                      <div className="text-white text-lg md:text-xl w-full font-semibold">Built-in Call Recording</div>
-                      <div className="w-full text-xs md:text-sm text-white font-light">Record video calls and share recordings anytime.</div>
                     </div>
                   </div>
-                   {/* <div className="relative w-[340px] h-[220px] bg-black flex flex-col items-center rounded-2xl shadow-[0_0px_px_rgb(0,0,0,0.1)]  overflow-hidden">
-                      <img className="absolute -top-[60px] translate-0 scale-105" src="mp4_box.png"/>
-                   </div> */}
-                </div>
-                <div className="relative flex flex-col w-[300px] md:w-[340px] h-[400px] md:h-[450px] bg-black rounded-4xl shadow-[0_0px_5px_rgb(0,0,0,0.1)] md:transform md:-rotate-x-10 md:-rotate-y-40 md:hover:rotate-x-0 md:hover:rotate-y-0 md:hover:scale-110 transition ease-in-out duration-300 mx-auto">
-                  <div className="absolute h-[100px] w-[200px] bg-white/50 blur-[50px] -top-[80px] left-1/2 -translate-x-1/2"></div>
-                  <div className="flex flex-1 gap-2 w-full text-white font-bold text-xl md:text-2xl px-4 items-center"><MessageCircle className="w-5 h-5 md:w-6 md:h-6"/>Real Time Chat</div>
-                  <div className="w-full h-[310px] md:h-[350px] bg-white rounded-4xl shadow-[0_-10px_40px_rgb(252,252,252,.6)]">
-                    <div className="h-full w-full px-3 py-4 flex flex-col gap-2">
-                      <div className="bg-black text-sm md:text-md w-fit px-2 py-2 rounded-[8px] text-white shadow-[0_3px_10px_rgb(0,0,0,0.2)]">Good morning</div>
-                      <div className="bg-black text-sm md:text-md w-fit px-2 py-2 rounded-[8px] text-white shadow-[0_3px_10px_rgb(0,0,0,0.2)]">Did you complete the task ?</div>
-                      <div className="text-black text-xs md:text-sm text-shadow-2xs">12:30</div>
-                      <div className="bg-white text-sm md:text-md w-fit px-2 py-2 rounded-[8px] text-black shadow-[0_3px_10px_rgb(0,0,0,0.2)] ml-auto">Morning, wokring on it.</div>
-                      <div className="text-black text-xs md:text-sm ml-auto text-shadow-2xs">12:55</div>
-                      <div className="bg-black text-sm md:text-md w-fit px-2 py-2 rounded-[8px] text-white shadow-[0_3px_10px_rgb(0,0,0,0.2)]">let me know if you need help</div>
-                      <div className="text-black text-xs md:text-sm text-shadow-2xs">12:56</div>
-                      <div className="w-full h-[70px] md:h-[80px] rounded-2xl bg-[#D9D9D9] text-black/40 flex items-center px-3 justify-between text-sm md:text-base">Message..
-                        <div className="w-[30px] md:w-[35px] h-[80%] bg-black rounded-full flex items-center justify-center"><SendHorizonal color="white" className="w-4 h-4 md:w-5 md:h-5"/></div>
-                      </div>
+                  <div className="flex w-full h-full">
+                    <div className="flex-1 flex flex-col justify-center pr-[80px] gap-[20px] -translate-y-10 items-end">
+                        <div className="text-[#ACACAC] w-[60%]">
+                          <div className="-translate-x-4 -translate-y-1 size-[15px] bg-[#404040]"/>
+                          <TextAnimate className="text-white"  animation="blurInUp" by="word" delay={0.8}>
+                            Stay connected with real-time messaging alongside every video call.
+                          </TextAnimate>
+                        </div>
+                        <div className="text-[#ACACAC] w-[60%]">
+                          <div className="-translate-x-4 -translate-y-1 size-[15px] bg-[#404040]"/>
+                          <TextAnimate className="text-white"  animation="blurInUp" by="word" delay={1.2}>
+                            Keep everyone involved with instant messaging that lets participants contribute without waiting for the right moment to speak.
+                          </TextAnimate>
+                        </div>
+                    </div>
+                    <div className="w-[1px] bg-[repeating-linear-gradient(180deg,rgba(255,255,255,0.2)_0_6px,transparent_6px_12px)] bg-[length:1px_100%] bg-right bg-no-repeat"></div>
+                    <div className="flex-1 py-[80px] pl-[80px]">
+                      <Chatbox/>
                     </div>
                   </div>
-                </div>
               </div>
             </div>
+
+            {/* Steps */}
+            <FeatureSection/>
             <div className="h-[550px] md:h-[650px] w-screen flex items-center justify-center ">
               <div className="rounded-2xl bg-black h-[450px] md:h-[500px] w-[90%] flex flex-col gap-6 items-center justify-center">
                   <div className="text-2xl md:text-6xl font-bold text-white max-w-[350px] md:max-w-3xl text-center">Ready to transform your meetings?</div>
@@ -233,22 +204,19 @@ const Home = () => {
               </div>
             </div>
             {/* footer */}
-            <div className="w-screen border-t md:h-[400px] flex flex-col max-w-[1200px] justify-between px-[20px] md:px-[100px] py-[40px] md:py-[60px] h-fit md:gap-0 gap-10">
+            <div className="bg-black w-screen border-t md:h-[400px] flex flex-col  justify-between px-[20px] md:px-[200px] py-[40px] md:py-[60px] h-fit md:gap-0 gap-10">
               <div className="w-full h-full flex justify-between md:flex-row flex-col md:gap-0 gap-10">
                 <div className="flex flex-col items-start justify-start gap-4 ">
                   <div className="text-[#999999] text-[14px] md:text-[16px] ">CONTACT ME</div>
-                  <div className="w-[300px] md:w-[400px] h-fit font-bold text-2xl md:text-4xl">Let's Discuss Your Vision. With Me.</div>
-                  <button className="mt-2 relative overflow-hidden rounded-lg bg-[#999999] px-[14px] md:px-[16px] py-[8px] md:py-[10px] text-[12px] md:text-[14px] text-white w-fit h-fit shadow-[0_3px_10px_rgb(0,0,0,0.2)]  z-2">
-                    <span className="pointer-events-none absolute inset-x-0 top-0 h-[45%]
-                    bg-gradient-to-b from-white/30 via-white/10 to-transparent ">
-                    </span>
+                  <div className="w-[300px] md:w-[400px] h-fit font-bold text-2xl md:text-4xl text-white">Let's Discuss Your Vision. With Me.</div>
+                  <button className="mt-2 relative overflow-hidden rounded-lg bg-[#363636] px-[14px] md:px-[16px] py-[8px] md:py-[10px] text-[12px] md:text-[14px] text-white w-fit h-fit shadow-[0_3px_10px_rgb(0,0,0,0.2)]  z-2">
                     adi.personal.13@gmail.com
                     </button>
                 </div>
                 <div className="flex flex-col gap-4">
                   <div className="text-[14px] md:text-[16px] text-[#999999]">QUICK LINKS</div>
-                  <div className="text-[14px] md:text-[16px] text-black">About me</div>
-                  <div className="text-[14px] md:text-[16px] text-black">Github</div>
+                  <div className="text-[14px] md:text-[16px] text-white">About me</div>
+                  <div className="text-[14px] md:text-[16px] text-white">Github</div>
                 </div>
               </div>
               <div className="flex items-center justify-between w-full">

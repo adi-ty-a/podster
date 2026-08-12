@@ -1,7 +1,7 @@
 import express from "express";
 import 'dotenv/config'
-import cors  from "cors";
-import {userRouter} from "./routes/user.js";
+import cors from "cors";
+import { userRouter } from "./routes/user.js";
 import { roomRouter } from "./routes/rooms.js";
 import { Authrouter } from "./auth.js";
 import { authenticateToken } from "./middleware.js";
@@ -37,21 +37,21 @@ app.get("/check", async (req, res) => {
         }
         if (usage.count >= 100) {
             throw new Error("Daily limit reached");
-        }        
+        }
         res.json(true);
     } catch (e) {
         res.status(403).json(e);
     }
 });
 
-app.use("/user",userRouter);
+app.use("/user", userRouter);
 
-app.use("/Oauth",Authrouter);
+app.use("/Oauth", Authrouter);
 
-app.use("/room",authenticateToken,roomRouter);
+app.use("/room", authenticateToken, roomRouter);
 
-app.use("/upload",authenticateToken,s3router);
+app.use("/upload", authenticateToken, s3router);
 
 console.log("server started");
 console.log(`${process.env.FRONTEND_URL}/Oauth/callback`);
-app.listen(3003);
+app.listen(process.env.PORT);
