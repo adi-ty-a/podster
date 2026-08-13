@@ -54,4 +54,4 @@ app.use("/upload", authenticateToken, s3router);
 
 console.log("server started");
 console.log(`${process.env.FRONTEND_URL}/Oauth/callback`);
-app.listen(process.env.PORT);
+app.listen(3001);

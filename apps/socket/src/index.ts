@@ -26,7 +26,12 @@ io.use((Socket, next) => {
 })
 
 io.on("connection", (socket) => {
-  console.log("connected");
+
+  socket.onAny((event, ...args) => {
+    console.log("EVENT:", event);
+    console.log("DATA:", args);
+  });
+
   socket.on("join", (data) => {
     // if(!data.roomid) return "no roomid";
     console.log("roomid - > " + data);
@@ -35,4 +40,4 @@ io.on("connection", (socket) => {
   user.initHandler(socket);
 });
 
-httpServer.listen(process.env.PORT);
+httpServer.listen(3002);

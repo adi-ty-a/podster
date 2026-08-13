@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc -b",
+    "start": "node dist/index.js",
     "dev": "tsc -b && node ./dist/index.js ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,10 +21,10 @@
     "@types/react": "19.1.0",
     "@types/react-dom": "19.1.1",
     "eslint": "^9.34.0",
-    "jsonwebtoken": "^9.0.3",
     "typescript": "5.9.2"
   },
   "dependencies": {
+    "jsonwebtoken": "^9.0.3",
     "@types/cookie": "^1.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",

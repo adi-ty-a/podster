@@ -1,0 +1,14 @@
+services:
+  express:
+    image: dev4adi/podsternodeserver:latest
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./apps/express/.env
+
+  socket:
+    image: dev4adi/podstersocketserver:latest
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./apps/socket/.env

@@ -27,7 +27,7 @@ export const UploadingRecording = ():{
 
     //start the process
     const startmultipart =async (fileName:string)=>{
-       const res  = await axios.post("http://localhost:3003/upload/start-multipart",{
+       const res  = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload/start-multipart`,{
             filename:fileName,
             roomid:roomid,
             contentType:"video/webm"
@@ -47,7 +47,7 @@ export const UploadingRecording = ():{
     }
     // gets the parsedurls for upload
     const geturls = async(UploadId:string,totalchunks:number,recID:string)=>{
-        const response = await axios.post("http://localhost:3003/upload/multipart-urls",{
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload/multipart-urls`,{
             recID:recID,
             roomid,
             PartNumber:totalchunks,
@@ -152,7 +152,7 @@ export const UploadingRecording = ():{
     }
     // final completion of the upload
     const completeupload = async (uploadresponses:UploadedPart[],UploadId:string,recID:string)=>{
-        const response = await axios.post("http://localhost:3003/upload/complete-multipart",{
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload/complete-multipart`,{
             recID:recID ,
             UploadId: UploadId,
             roomid,
@@ -167,7 +167,7 @@ export const UploadingRecording = ():{
     }
     
     const abortuploading=async(UploadId:string,recID:string)=>{
-        const response = await axios.post("http://localhost:3003/upload/abort-multipart",{
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload/abort-multipart`,{
             UploadId,recID,roomid
         },{
         headers:{

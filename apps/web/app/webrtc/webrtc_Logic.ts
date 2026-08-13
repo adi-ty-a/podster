@@ -110,7 +110,7 @@ export class rtc{
     }
 
     flushPendingCandidates(){
-        this.iceCandidateBuffer.forEach(c=> this.pc.addIceCandidate(new RTCIceCandidate(c)));
+        this.iceCandidateBuffer.forEach((c:RTCIceCandidate)=> this.pc.addIceCandidate(new RTCIceCandidate(c)));
         this.iceCandidateBuffer = [];
     }
 

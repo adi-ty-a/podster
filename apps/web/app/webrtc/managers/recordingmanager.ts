@@ -21,6 +21,7 @@ export class RecordingManager {
     }
     
     endRecording() {
+        console.log("this called");
         this.socket.emit("end_recording",{roomid:this.roomid});
     }
 

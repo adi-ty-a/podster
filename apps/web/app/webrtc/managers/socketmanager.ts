@@ -1,11 +1,11 @@
 import { io, Socket } from "socket.io-client";
-
 export class socketManager{
     public socket:Socket|undefined;
     constructor(public roomid:string){}
     
     connect():Socket{
-        this.socket =  io("http://localhost:3001",{withCredentials:true,transports: ["websocket"]});
+        this.socket =  io(process.env.NEXT_PUBLIC_SOCKET_URL,{withCredentials:true,transports: ["websocket"]});
+        console.log("socket url "+process.env.NEXT_PUBLIC_SOCKET_URL);
         this.socket.on("connect", () => {
             this.join();
         });

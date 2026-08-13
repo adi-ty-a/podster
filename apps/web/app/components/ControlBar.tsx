@@ -1,6 +1,6 @@
 "use client"
 import { Circle, MessageCircle, Mic, Pause, Phone, Video } from "lucide-react"
-import { webrtcmanager } from "../webrtc/rtcmanager"
+import { Manager as webrtcmanager } from "@/app/webrtc/managers/webRtcManager"
 import { RefObject, useEffect, useState } from "react"
 import { Recording } from "../webrtc/recording"
 import { useChat, useRecording } from "../store"
@@ -44,7 +44,7 @@ export const ControlBar=({data}:ControlBarData)=>{
     const toggleaudio=()=>{
       if(localvid){
         setmic(!mic)
-        return  manager?.toggleaduio()
+        return  manager?.toggleaudio()
       }
     }
     const hangup=()=>{
@@ -63,7 +63,7 @@ export const ControlBar=({data}:ControlBarData)=>{
       if(manager){
         setrequestsent(true) 
         setTimeout(() => {setrequestsent(false);}, 10000);
-        const res = await manager.record_permission();
+        const res = await manager.recording.requestPermission();
         const resvalue = res.permission;
         if(resvalue){
           setdisableRecordButton(false);
@@ -82,10 +82,10 @@ export const ControlBar=({data}:ControlBarData)=>{
     const videoStop=async()=>{
       if(!recorderref.current) return 
       if(manager){
-        manager.endrecording();
+        manager.recording.endRecording();
       }
-        const {videoUrl, videoBlob} = await recorderref.current?.stopRecording()
-      window.open(videoUrl);
+      const {videoUrl, videoBlob} = await recorderref.current?.stopRecording()
+      console.log("video recorded");
     }
 
     return <>

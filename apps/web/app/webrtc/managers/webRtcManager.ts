@@ -21,7 +21,7 @@ export class Manager {
         this.recording = new RecordingManager(this.socket,this.roomid,this.onshowPermissionBox);
         this.mediaListnersSetup();
         this.socket.on("hangup",()=>{
-            this.hangup})
+            this.hangup()})
     }
 
     getmedia=async()=>{
@@ -38,6 +38,7 @@ export class Manager {
     }
 
     hangup(){
+         console.log("hangup called");
         this.media.stop();
         this.rtcmanage?.closeRtc();
         this.socket.dissconnect();

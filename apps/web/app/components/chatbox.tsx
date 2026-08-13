@@ -1,7 +1,5 @@
 import { Send } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { webrtcmanager } from "../webrtc/rtcmanager";
-import { rtcengine } from "../webrtc/connectionlogic";
 import { Manager } from "../webrtc/managers/webRtcManager";
 
 interface chats{

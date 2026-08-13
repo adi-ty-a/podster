@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 import { StartFreeTrail } from "./startfreetrial";
 import FeatureSection from "../testupload/page";
 import { Chatbox, ClearnUi } from "./features";
-import { TextAnimate } from "../components/text-animate";
 
 const Home = () => {
   const [show,setclose] = useState(false);
@@ -159,15 +158,15 @@ const Home = () => {
                     <div className="flex-1 flex flex-col justify-center pl-[80px] gap-[20px] -translate-y-10">
                         <div className="text-[#ACACAC] w-[60%]">
                           <div className="-translate-x-4 -translate-y-1 size-[15px] bg-[#404040]"/>
-                          <TextAnimate className="text-white"  animation="blurInUp" by="word" delay={0.8}>
+                          <div>
                             Forget complicated setups and endless configuration. Create a room, share a link, and start your meeting instantly—no downloads, no technical hurdles.
-                          </TextAnimate>
+                          </div>
                         </div>
                         <div className="text-[#ACACAC] w-[60%]">
                           <div className="-translate-x-4 -translate-y-1 size-[15px] bg-[#404040]"/>
-                          <TextAnimate className="text-white" animation="blurInUp" by="word" delay={1.6}>
+                          <div>
                             Create. Share. Connect. Secure, high-quality video meetings with just a single link
-                          </TextAnimate>
+                          </div>
                         </div>
                     </div>
                   </div>
@@ -175,15 +174,15 @@ const Home = () => {
                     <div className="flex-1 flex flex-col justify-center pr-[80px] gap-[20px] -translate-y-10 items-end">
                         <div className="text-[#ACACAC] w-[60%]">
                           <div className="-translate-x-4 -translate-y-1 size-[15px] bg-[#404040]"/>
-                          <TextAnimate className="text-white"  animation="blurInUp" by="word" delay={0.8}>
+                          <div>
                             Stay connected with real-time messaging alongside every video call.
-                          </TextAnimate>
+                          </div>
                         </div>
                         <div className="text-[#ACACAC] w-[60%]">
                           <div className="-translate-x-4 -translate-y-1 size-[15px] bg-[#404040]"/>
-                          <TextAnimate className="text-white"  animation="blurInUp" by="word" delay={1.2}>
+                          <div className="text-white" >
                             Keep everyone involved with instant messaging that lets participants contribute without waiting for the right moment to speak.
-                          </TextAnimate>
+                          </div>
                         </div>
                     </div>
                     <div className="w-[1px] bg-[repeating-linear-gradient(180deg,rgba(255,255,255,0.2)_0_6px,transparent_6px_12px)] bg-[length:1px_100%] bg-right bg-no-repeat"></div>
