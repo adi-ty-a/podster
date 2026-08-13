@@ -23,7 +23,7 @@ export default function FeatureSection() {
         },
     };
 
-    return <div className="bg-[#F0F3F5] w-screen h-screen flex flex-col items-center justify-center py-14 sm:py-[70px] px-4">
+    return <div className="bg-[#F0F3F5] w-screen min-h-screen h-fit flex flex-col items-center justify-center py-14 sm:py-[70px] px-4">
         <motion.div
             initial={{ opacity: 0, y: -16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -39,7 +39,7 @@ export default function FeatureSection() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
-            className="flex flex-col md:flex-row w-full max-w-[1000px] items-center md:items-stretch gap-16 md:gap-10 mt-16 sm:mt-20 md:mt-[100px]"
+            className="flex flex-col md:flex-row max-w-[1000px] items-center md:items-stretch gap-16 md:gap-10 mt-16 sm:mt-20 md:mt-[100px]"
         >
             {/* box 1 */}
             <motion.div variants={item} className="relative w-full max-w-[300px] aspect-square bg-white rounded-[42px] flex items-center justify-center shrink-0">
