@@ -32,8 +32,8 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          build-args: 
-            DIRECT_URL: ${{secrets.DIRECT_URL}}
+          build-args: |
+            DIRECT_URL=${{ secrets.DIRECT_URL }}
           file: dockerfiles/Dockerfile.node
           push: true
           tags: dev4adi/podsternodeserver:${{ github.sha }}
