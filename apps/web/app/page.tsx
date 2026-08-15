@@ -166,7 +166,7 @@ const Home = () => {
             <div className="text-[#ACACAC] w-full md:w-[60%]">
               <div className="translate-x-12 md:-translate-x-4 -translate-y-1 size-[15px] bg-[#404040]"/>
               <div className="text-[12px] md:text-[16px] md:px-0 px-[64px]">
-                testing bruh Forget complicated setups and endless configuration. Create a room, share a link, and start your meeting instantly—no downloads, no technical hurdles.
+                Forget complicated setups and endless configuration. Create a room, share a link, and start your meeting instantly—no downloads, no technical hurdles.
               </div>
             </div>
             <div className="text-[#ACACAC] w-full md:w-[60%]">
