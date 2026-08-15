@@ -1,13 +1,13 @@
 services:
   express:
-    image: dev4adi/podsternodeserver:latest
+    image: dev4adi/podsternodeserver:${IMAGE_TAG}
     ports:
       - "3001:3001"
     env_file:
       - ./apps/express/.env
 
   socket:
-    image: dev4adi/podstersocketserver:latest
+    image: dev4adi/podstersocketserver:${IMAGE_TAG}
     ports:
       - "3002:3002"
     env_file:
