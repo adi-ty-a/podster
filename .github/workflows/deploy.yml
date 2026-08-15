@@ -33,7 +33,7 @@ jobs:
         with:
           context: .
           build-args: 
-            DATABASE_ULR: ${{secrets.DIRECT_URL}}
+            DIRECT_URL: ${{secrets.DIRECT_URL}}
           file: dockerfiles/Dockerfile.node
           push: true
           tags: dev4adi/podsternodeserver:${{ github.sha }}
