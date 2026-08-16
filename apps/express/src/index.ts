@@ -15,9 +15,13 @@ const app = express();
 app.use(express.json())
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "*",
     credentials: true
 }))
+
+app.get("/status",(req,res)=>{
+    res.json("backend-working");
+})
 
 app.use(passport.initialize());
 
