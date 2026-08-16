@@ -15,11 +15,14 @@ const app = express();
 app.use(express.json())
 
 app.use(cors({
-    origin: "*",
+    origin: [
+        "https://podster.byadi.me",
+        "http://localhost:3000"
+    ],
     credentials: true
 }))
 
-app.get("/status",(req,res)=>{
+app.get("/status", (req, res) => {
     res.json("backend-working");
 })
 
