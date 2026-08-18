@@ -23,6 +23,7 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
     if(token && typeof token == "string"){
         try{
             const jwtResponse = jwt.verify(token,process.env.JWT_SECRET!);
+            console.log(jwtResponse);
             const userid  = jwtResponse as jwt_payload & {userid:number}
             req.userId = userid.userid;
             next();
