@@ -16,7 +16,7 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
     console.log(token);
     console.log(process.env.JWT_SECRET);
     if(!token || token == ""){
-        res.status(401).json({
+        return res.status(401).json({
             message:"no_cookie_found"
         })
     }
@@ -26,15 +26,16 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
             console.log(jwtResponse);
             const userid  = jwtResponse as jwt_payload & {userid:number}
             req.userId = userid.userid;
-            next();
+            return next();
         }catch(e){
             console.log(e);
-            res.status(301).json({
+            return res.status(301).json({
             success: false,
             message: "JWT_wrong",
+
         })
         }
     }else{
-        res.status(301).redirect("http:localhost:3000/login")
+        return res.redirect("http:localhost:3000/login")
     }
 }
