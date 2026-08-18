@@ -13,6 +13,8 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
     // }
     // const token = authHeader.split(" ")[1];
     const token = req.cookies?.access_token
+    console.log(token);
+    console.log(process.env.JWT_SECRET);
     if(!token || token == ""){
         res.status(401).json({
             message:"no_cookie_found"
