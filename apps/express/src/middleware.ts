@@ -25,6 +25,7 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
             req.userId = userid.userid;
             next();
         }catch(e){
+            console.log(e);
             res.status(301).json({
             success: false,
             message: "JWT_wrong",
