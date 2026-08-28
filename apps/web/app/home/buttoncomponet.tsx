@@ -1,6 +1,4 @@
 "use client"
-
-
 import HButton from "../components/homebutton"
 import { useRouter } from "next/navigation"
 export default function JoinPodcastBtn(){

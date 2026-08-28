@@ -1,10 +1,10 @@
 "use client"
-import { motion ,type Variants} from "motion/react"
-
-export default function FeatureSection() {
+import { motion, type Variants } from "motion/react"
+import { useRef } from "react";
+export default function FeatureSection({ ref }: { ref?: React.Ref<HTMLDivElement> }) {
     const cn = (...classes: string[]) => classes.join(" ");
 
-    const container :Variants= {
+    const container: Variants = {
         hidden: {},
         visible: {
             transition: {
@@ -14,7 +14,7 @@ export default function FeatureSection() {
         },
     };
 
-    const item :Variants= {
+    const item: Variants = {
         hidden: { opacity: 0, y: 24 },
         visible: {
             opacity: 1,
@@ -25,6 +25,7 @@ export default function FeatureSection() {
 
     return <div className="bg-[#F0F3F5] w-screen min-h-screen h-fit flex flex-col items-center justify-center py-14 sm:py-[70px] px-4">
         <motion.div
+            ref={ref}
             initial={{ opacity: 0, y: -16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.5 }}
@@ -77,8 +78,8 @@ export default function FeatureSection() {
                             <svg className="scale-70 -z-0" width="186" height="114" viewBox="0 0 186 114" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M0.5 114.006V58.0057L63.1411 56.7281H96.1411M185.5 114.006V58.0057L134.01 56.7281H96.1411M96.1411 56.7281L95.5 0.00561523" stroke="#FF3838" strokeDasharray="10 10" />
                             </svg>
-                            <img src="/lama.png" className="absolute right-9 bottom-3 rounded-full size-[50px] mask-b-from-10% mask-b-to-100%"/>
-                            <img src="/horse.png" className="absolute left-9 bottom-3 rounded-full size-[50px] mask-b-from-10% mask-b-to-100%"/>
+                            <img src="/lama.png" className="absolute right-9 bottom-3 rounded-full size-[50px] mask-b-from-10% mask-b-to-100%" />
+                            <img src="/horse.png" className="absolute left-9 bottom-3 rounded-full size-[50px] mask-b-from-10% mask-b-to-100%" />
                         </div>
                     </div>
                     <div className="flex flex-col h-[30%] w-full px-[24px] gap-[2px] pt-[5px]">

@@ -13,7 +13,7 @@ export class rtc {
     private initaotr!: boolean
     private track: () => Promise<MediaStream>;
     private onRemoteStream?: (stream: MediaStream) => void;
-    public iceCandidateBuffer: any = []
+    public iceCandidateBuffer: any = [];
     constructor(track: () => Promise<MediaStream>, socket: socketManager, onRemoteStream: (stream: MediaStream) => void, public roomid: string, public iceServer: any) {
         this.socket = socket
         this.track = track
@@ -26,6 +26,10 @@ export class rtc {
         this.pc = new RTCPeerConnection(this.iceServer);
         this.pc.onicecandidate = this.handleICECandidateEvent;
         this.pc.ontrack = this.handletrack;
+        this.pc.onconnectionstatechange = ()=>{console.log("connection STATE:",this.pc.connectionState)}
+        this.pc.onsignalingstatechange= ()=>{console.log("SIGNALING STATE:",this.pc.signalingState)}
+        this.pc.onicegatheringstatechange= ()=>{console.log("ICE GATHERING:",this.pc.iceGatheringState)}
+        this.pc.oniceconnectionstatechange = ()=>{console.log("ICE STATE",this.pc.iceConnectionState )}
         const tracks = await this.track()
         tracks.getTracks().forEach(track => this.pc.addTrack(track, tracks));
         if (this.initaotr == true) {
@@ -76,8 +80,8 @@ export class rtc {
         const dsec = new RTCSessionDescription(msg.sdp);
         await this.pc.setRemoteDescription(dsec);
         const answer = await this.pc.createAnswer();
-        this.flushPendingCandidates();
         await this.pc.setLocalDescription(answer);
+        this.flushPendingCandidates();
         const res = {
             type: "answer",
             roomid: this.roomid,
@@ -92,13 +96,23 @@ export class rtc {
         this.flushPendingCandidates();
     }
 
-    handleNewICECandidateMsg(msg: any) {
-        if (!this.pc || !this.pc.remoteDescription) {
-            this.iceCandidateBuffer.push(msg.candidate);
-            return
+    async handleNewICECandidateMsg(msg: any) {
+        try {
+            if (!this.pc || !this.pc.remoteDescription) {
+                this.iceCandidateBuffer.push(msg.candidate);
+                return
+            }
+            const candidate = new RTCIceCandidate(msg.candidate);
+            await this.pc.addIceCandidate(candidate)
+            console.log(
+            "Remote ICE candidate added:",
+            candidate.type,
+            candidate.address,
+            candidate.port
+        );
+        } catch (e) {
+            console.error("FAILED TO ADD ICE CANDIDATE", e, msg.candidate);
         }
-        const candidate = new RTCIceCandidate(msg.candidate);
-        this.pc.addIceCandidate(candidate)
     }
 
     flushPendingCandidates() {

@@ -26,6 +26,6 @@ export const RenderRemoteVideo = ({remotevid}:{remotevid:VideoRef}) => {
                                     <PersonIcon style={{color:"black",fontSize: "80px" }}/>
                                 </div>
                             </div>}
-                            <video className="w-full h-full object-cover shadow-[0_3px_5px_rgb(0,0,0,0.1)]" autoPlay ref={localvid} ></video>
+                            <video muted className="w-full h-full object-cover shadow-[0_3px_5px_rgb(0,0,0,0.1)]" autoPlay ref={localvid} ></video>
                         </div> 
       }
