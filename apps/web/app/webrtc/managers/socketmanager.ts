@@ -5,7 +5,6 @@ export class socketManager{
     
     connect():Socket{
         this.socket =  io(process.env.NEXT_PUBLIC_SOCKET_URL,{withCredentials:true,transports: ["websocket"]});
-        console.log("socket url "+process.env.NEXT_PUBLIC_SOCKET_URL);
         this.socket.on("connect", () => {
             this.join();
         });

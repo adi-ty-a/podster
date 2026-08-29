@@ -23,13 +23,13 @@ export class rtc {
     async createPeerConnection(initaotr: boolean, roomid?: string) {
         if (roomid) this.roomid = roomid;
         this.initaotr = initaotr
-        this.pc = new RTCPeerConnection(this.iceServer);
+        this.pc = new RTCPeerConnection({ ...this.iceServer, iceTransportPolicy: 'relay' });
         this.pc.onicecandidate = this.handleICECandidateEvent;
         this.pc.ontrack = this.handletrack;
-        this.pc.onconnectionstatechange = ()=>{console.log("connection STATE:",this.pc.connectionState)}
-        this.pc.onsignalingstatechange= ()=>{console.log("SIGNALING STATE:",this.pc.signalingState)}
-        this.pc.onicegatheringstatechange= ()=>{console.log("ICE GATHERING:",this.pc.iceGatheringState)}
-        this.pc.oniceconnectionstatechange = ()=>{console.log("ICE STATE",this.pc.iceConnectionState )}
+        this.pc.onconnectionstatechange = async () => { console.log("CONNECTION STATE:", this.pc.connectionState) }
+        this.pc.onsignalingstatechange = () => { console.log("SIGNALING STATE:", this.pc.signalingState) }
+        this.pc.onicegatheringstatechange = () => { console.log("ICE GATHERING:", this.pc.iceGatheringState) }
+        this.pc.oniceconnectionstatechange = () => { console.log("ICE STATE", this.pc.iceConnectionState) }
         const tracks = await this.track()
         tracks.getTracks().forEach(track => this.pc.addTrack(track, tracks));
         if (this.initaotr == true) {
@@ -39,6 +39,8 @@ export class rtc {
 
     handleICECandidateEvent = (e: RTCPeerConnectionIceEvent) => {
         if (!e.candidate) return;
+        console.log("ice candidate")
+        console.log(e.candidate);
         this.sendToServer({
             type: "new-ice-candidate",
             roomid: this.roomid,
@@ -66,6 +68,7 @@ export class rtc {
     }
 
     handleNegotiationNeededEvent = async () => {
+        console.log("handlenegotiation");
         const offer = await this.pc.createOffer()
         await this.pc.setLocalDescription(offer)
         this.sendToServer({
@@ -105,11 +108,11 @@ export class rtc {
             const candidate = new RTCIceCandidate(msg.candidate);
             await this.pc.addIceCandidate(candidate)
             console.log(
-            "Remote ICE candidate added:",
-            candidate.type,
-            candidate.address,
-            candidate.port
-        );
+                "Remote ICE candidate added:",
+                candidate.type,
+                candidate.address,
+                candidate.port
+            );
         } catch (e) {
             console.error("FAILED TO ADD ICE CANDIDATE", e, msg.candidate);
         }
@@ -140,6 +143,7 @@ export class rtc {
 
 
     sendToServer(msg: any) {
+         console.log("sendtoservercalled");
         this.socket.emit(msg.type
             , msg)
     }

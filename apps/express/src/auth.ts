@@ -14,7 +14,6 @@ passport.use(new GoogleStrategy({
 },
     async function (accessToken, refreshToken, profile, done) {
         try {
-            console.log(profile.id);
             const response = await prisma.user.upsert({
                 where: {
                     googleId: profile.id

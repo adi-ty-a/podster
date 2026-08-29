@@ -12,26 +12,6 @@ import { prisma } from "./prisma.js";
 
 const app = express();
 
-app.get("/getcredentials",async (req,res:Response)=>{
-    console.log(process.env.CLOUDFLARE_TURN_KEY_ID);
-    const response = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${process.env.CLOUDFLARE_TURN_KEY_ID}/credentials/generate-ice-servers`,{
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${process.env.CLOUDFLARE_TURN_API_TOKEN}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ttl: 3600, 
-        }),
-    })
-    console.log(response);
-    if(!response.ok){
-        const error = await response.text();
-        return res.status(response.status).send(error);
-    }
-    const data = await response.json()
-    return res.json(data);
-})
 
 app.use(express.json())
 
@@ -42,6 +22,25 @@ app.use(cors({
     ],
     credentials: true
 }))
+app.get("/getcredentials",async (req,res:Response)=>{
+    const response = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${process.env.CLOUDFLARE_TURN_KEY_ID}/credentials/generate-ice-servers`,{
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${process.env.CLOUDFLARE_TURN_API_TOKEN}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ttl: 3600, 
+        }),
+    })
+    if(!response.ok){
+        const error = await response.text();
+        return res.status(response.status).send(error);
+    }
+    const data = await response.json()
+    console.log(data);
+    return res.json(data);
+})
 
 app.get("/status", (req, res) => {
     res.json("backend-working");
@@ -80,9 +79,4 @@ app.use("/room", authenticateToken, roomRouter);
 
 app.use("/upload", authenticateToken, s3router);
 
-
-
-
-console.log("server started");
-console.log(`${process.env.FRONTEND_URL}/Oauth/callback`);
 app.listen(3001);

@@ -13,8 +13,6 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
     // }
     // const token = authHeader.split(" ")[1];
     const token = req.cookies?.access_token
-    console.log(token);
-    console.log(process.env.JWT_SECRET);
     if(!token || token == ""){
         return res.status(401).json({
             message:"no_cookie_found"
@@ -23,12 +21,10 @@ export const authenticateToken =(req:any,res:Response,next:NextFunction)=>{
     if(token && typeof token == "string"){
         try{
             const jwtResponse = jwt.verify(token,process.env.JWT_SECRET!);
-            console.log(jwtResponse);
             const userid  = jwtResponse as jwt_payload & {userid:number}
             req.userId = userid.userid;
             return next();
         }catch(e){
-            console.log(e);
             return res.status(301).json({
             success: false,
             message: "JWT_wrong",
