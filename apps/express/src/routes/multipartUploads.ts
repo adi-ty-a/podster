@@ -28,10 +28,10 @@ s3router.post("/signedurl",authenticateToken,saveRecording,async(req:any,res)=>{
         })
         const signedurl = await getSignedUrl(S3,cmd);
         if(signedurl){
-            res.json(signedurl);
+            return res.json(signedurl);
         }
     }catch(e){
-        res.json(e);
+        return res.json(e);
     }
 })
 
@@ -100,8 +100,8 @@ s3router.post("/multipart-urls",authenticateToken,async(req:any,res)=>{
         )
             res.json(urls);
     }catch(e){
-        res.status(404).json("multipart-url error");
         console.log(e)
+        return res.status(404).json("multipart-url error");
 }
 })
 
@@ -127,7 +127,7 @@ s3router.post("/complete-multipart",async(req:any,res)=>{
         })
     }catch(e){
         console.log(e);
-        res.status(403).json(e);
+        return res.status(403).json(e);
     }
 })
 
@@ -179,7 +179,7 @@ s3router.post("/abort-multipart",async(req:any,res)=>{
 s3router.post("/download_all_from_room",async(req:any,res)=>{
     const {roomid} = req.body;
     if(!roomid){
-        res.json({
+        return res.json({
             status:false,
             message:"no_roomid"
         })

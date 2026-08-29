@@ -54,7 +54,7 @@ export default function Room() {
   }, [roomid])
 
   useEffect(() => {
-    console.log("fetch media called")
+    console.log("fetch media called");
     if (!manager) return
     async function fetchmedia() {
       const MediaStream = await manager?.media.getmedia();
@@ -67,7 +67,7 @@ export default function Room() {
     fetchmedia()
   }, [manager])
 
-  useEffect(() => {
+  useEffect(()=>{
     const rec = () => {
       if (!recorderref.current && typeof room === "string" && localmedia) {
         recorderref.current = Recording(localmedia);
@@ -76,7 +76,7 @@ export default function Room() {
     rec();
   }, [localmedia])
 
-  useEffect(() => {
+  useEffect(()=>{
     if (remoteStream && remotevid.current) {
       remotevid.current.srcObject = remoteStream
     }

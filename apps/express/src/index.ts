@@ -11,10 +11,7 @@ import cookieParser from "cookie-parser";
 import { prisma } from "./prisma.js";
 
 const app = express();
-
-
 app.use(express.json())
-
 app.use(cors({
     origin: [
         "https://podster.byadi.me",
@@ -22,18 +19,19 @@ app.use(cors({
     ],
     credentials: true
 }))
-app.get("/getcredentials",async (req,res:Response)=>{
-    const response = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${process.env.CLOUDFLARE_TURN_KEY_ID}/credentials/generate-ice-servers`,{
+
+app.get("/getcredentials", async (req, res: Response) => {
+    const response = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${process.env.CLOUDFLARE_TURN_KEY_ID}/credentials/generate-ice-servers`, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${process.env.CLOUDFLARE_TURN_API_TOKEN}`,
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ttl: 3600, 
+            ttl: 3600,
         }),
     })
-    if(!response.ok){
+    if (!response.ok) {
         const error = await response.text();
         return res.status(response.status).send(error);
     }
@@ -43,7 +41,7 @@ app.get("/getcredentials",async (req,res:Response)=>{
 })
 
 app.get("/status", (req, res) => {
-    res.json("backend-working");
+    return res.json("backend-working");
 })
 
 app.use(passport.initialize());
@@ -65,9 +63,9 @@ app.get("/check", async (req, res) => {
         if (usage.count >= 100) {
             throw new Error("Daily limit reached");
         }
-        res.json(true);
+        return res.json(true);
     } catch (e) {
-        res.status(403).json(e);
+        return res.status(403).json(e);
     }
 });
 

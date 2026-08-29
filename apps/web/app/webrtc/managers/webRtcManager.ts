@@ -11,14 +11,12 @@ export class Manager {
     public recording!: RecordingManager;
     public rtcmanage: rtcmanage | undefined;
     public videoStop?: () => () => Promise<void>
-
     constructor(public roomid: string, public onRemoteStream: (media: MediaStream) => void, public onUserConnected: (value: boolean) => void, public onIsLocalVideoEnabled: (state: boolean) => void, public onIsRemoteVideoEnabled: (state: boolean) => void, public onshowPermissionBox: () => void) {
         this.socket = new socketManager(this.roomid);
         this.media = new mediaManager(this.onIsLocalVideoEnabled, this.onIsRemoteVideoEnabled);
         this.chat = new chatManager(this.socket, this.roomid);
         this.recording = new RecordingManager(this.socket, this.roomid, this.onshowPermissionBox);
         this.mediaListnersSetup();
-
     }
 
     async create() {
