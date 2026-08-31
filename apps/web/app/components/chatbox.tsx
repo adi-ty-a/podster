@@ -7,7 +7,7 @@ interface chats{
   msg:string
 }
 
-export default function Chatbox({manager}:{manager:Manager|null}) {
+export default function Chatbox({manager}:{manager?:Manager|null}) {
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatbottom = useRef<HTMLDivElement | null>(null);

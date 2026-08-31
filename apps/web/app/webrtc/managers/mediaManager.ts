@@ -1,7 +1,6 @@
     export class mediaManager{
         public mediaPromise:Promise<MediaStream>|undefined;
         public localstream:MediaStream|undefined;
-
         constructor(public onIsLocalVideoEnabled:(state:boolean)=>void,public onIsRemoteVideoEnabled:(state:boolean)=>void){}
 
         getmedia=async()=>{      
@@ -24,7 +23,6 @@
             return state;
             
         };
-
 
         toggleaduio = () => {
             if(this.localstream){

@@ -14,7 +14,7 @@ export default function Join(){
             },{withCredentials:true})
                 router.push("/room/"+roomid+"/"+Roomname)
         }catch(e){
-                router.push("/dashboard")
+                router.push("/signup")
         }
     }
 

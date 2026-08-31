@@ -1,151 +1,154 @@
 import { Socket } from "socket.io";
-export interface user{
-    socket:Socket,
-    name:string,
+export interface user {
+    socket: Socket,
+    name: string,
 }
 
 let GlobalRoomId = 1
 
 interface rooms {
-    user1:user,
-    user2?:user,
-    expires?:Date
+    user1: user,
+    user2?: user,
+    expires?: Date
 }
 
 export class RoomManager {
 
-    private Rooms :Map<string,rooms>;
+    private Rooms: Map<string, rooms>;
 
-    constructor(){
+    constructor() {
         this.Rooms = new Map<string, rooms>()
         this.isExpired()
     }
 
-    isExpired=()=>{
-        setInterval(()=>{
-            for( const [key,value] of this.Rooms ) {
-                if(!value.expires)return 
-                if( new Date > value.expires){
-                    this.endcall({roomid:key,socket:value.user1.socket});
-                    if (value.user2) this.endcall({roomid:key,socket:value.user2.socket});
+    isExpired = () => {
+        setInterval(() => {
+            for (const [key, value] of this.Rooms) {
+                if (!value.expires) return
+                if (new Date > value.expires) {
+                    this.endcall({ roomid: key, socket: value.user1.socket });
+                    if (value.user2) this.endcall({ roomid: key, socket: value.user2.socket });
+                    return
                 }
             }
-        },1000 * 60);
+        }, 1000 * 60);
     }
 
-    createRooms(user1:user,roomid:string){
-        this.Rooms.set(roomid,{
+    createRooms(user1: user, roomid: string) {
+        this.Rooms.set(roomid, {
             user1,
         })
         return roomid
     }
 
-    joinroom(roomid:string,user:user){
+    joinroom(roomid: string, user: user) {
         const room = this.Rooms.get(roomid);
-        if(!room){
-            this.createRooms(user,roomid)
+        if (!room) {
+            this.createRooms(user, roomid)
             console.log(this.Rooms);
             return "Roomcreted"
-        }else{
-        room.user2 = user;
-        room.expires= new Date(Date.now() + 60 * 60 * 1000);
-        this.Rooms.set(roomid,room);
-                    console.log(this.Rooms);
-        room.user1.socket.emit("send-offer",{
-                type:"send-offer",
+        } else {
+            room.user2 = user;
+            room.expires = new Date(Date.now() + 60 * 60 * 1000);
+            this.Rooms.set(roomid, room);
+            console.log(this.Rooms);
+            room.user1.socket.emit("send-offer", {
+                type: "send-offer",
                 roomid: roomid
             })
-        return "roomjoined"
+            return "roomjoined"
         }
     }
 
-    onOffer(roomid:string, sdp :string){
+    onOffer(roomid: string, sdp: string) {
         const user2 = this.Rooms.get(roomid)?.user2
-        if(user2){
-            user2.socket.emit("Offer",{
+        if (user2) {
+            user2.socket.emit("Offer", {
                 sdp
             })
         }
     }
 
-    onAnswer(roomid:string, sdp :string){
+    onAnswer(roomid: string, sdp: string) {
         const user1 = this.Rooms.get(roomid)?.user1
-        if(user1){
-            user1.socket.emit("answer",{
+        if (user1) {
+            user1.socket.emit("answer", {
                 sdp
             })
         }
-    } 
-
-    onIceCandidate({roomid,candidate,socket}:{roomid:string,candidate:RTCIceCandidate,socket:Socket}){
-        const room = this.Rooms.get(roomid);
-        if(room){
-            if (room.user1.socket.id === socket.id) {
-        room.user2?.socket.emit("new-ice-candidate", { candidate });
-        } else if (room.user2?.socket.id === socket.id) {
-            room.user1.socket.emit("new-ice-candidate", { candidate });
-        }
-        }
     }
 
-    onmessage({roomid,socket,msg}:{roomid:string,socket:Socket,msg:string}){
+    onIceCandidate({ roomid, candidate, socket }: { roomid: string, candidate: RTCIceCandidate, socket: Socket }) {
         const room = this.Rooms.get(roomid);
-        if(room){
-            if(socket.id == room.user1.socket.id){
-                room.user2?.socket.emit("msg",msg);
-            }else if(socket.id == room.user2?.socket.id){
-                room.user1.socket.emit("msg",msg);
+        if (room) {
+            if (room.user1.socket.id === socket.id) {
+                room.user2?.socket.emit("new-ice-candidate", { candidate });
+            } else if (room.user2?.socket.id === socket.id) {
+                room.user1.socket.emit("new-ice-candidate", { candidate });
             }
         }
     }
 
-    onleave({roomid}:{roomid:string}){
+    onmessage({ roomid, socket, msg }: { roomid: string, socket: Socket, msg: string }) {
+        const room = this.Rooms.get(roomid);
+        if (room) {
+            if (socket.id == room.user1.socket.id) {
+                room.user2?.socket.emit("msg", msg);
+            } else if (socket.id == room.user2?.socket.id) {
+                room.user1.socket.emit("msg", msg);
+            }
+        }
+    }
+
+    onleave({ roomid }: { roomid: string }) {
         this.Rooms.delete(roomid)
     }
 
-    requestingPermission({roomid,socket}:{roomid:string,socket:Socket}){
-        const user = this.getOtherUser(socket,roomid);
+    requestingPermission({ roomid, socket }: { roomid: string, socket: Socket }) {
+        const user = this.getOtherUser(socket, roomid);
         if (!user) return socket.emit("no other party");
         user.socket.emit("record-permission");
     }
 
-    record_response({roomid,socket,permission}:{roomid:string,socket:Socket,permission:boolean}){
-        const user = this.getOtherUser(socket,roomid);
+    record_response({ roomid, socket, permission }: { roomid: string, socket: Socket, permission: boolean }) {
+        const user = this.getOtherUser(socket, roomid);
         if (!user) return;
-        user.socket.emit("record-response",{permission});
-        
-    } 
+        user.socket.emit("record-response", { permission });
 
-    endrecording({roomid,socket}:{roomid:string,socket:Socket}){
-        const user = this.getOtherUser(socket,roomid);
-        if (!user) return;
-        user.socket.emit("end_recording");
-        
-    } 
-    endcall({roomid,socket}:{roomid:string,socket:Socket}){
-        const user = this.getOtherUser(socket,roomid);
-        if (!user) return socket.emit("no user in room or no room found");
-        return user.socket.emit("hangup");
-        
     }
 
-    handlevideostate({socket,roomid,state}:{socket:Socket,roomid:string,state:boolean}){
-        const user = this.getOtherUser(socket,roomid)
-        if(!user) socket.emit("no user found")
-        user.socket.emit("video-state",{state});
-    }   
+    endrecording({ roomid, socket }: { roomid: string, socket: Socket }) {
+        const user = this.getOtherUser(socket, roomid);
+        if (!user) return;
+        user.socket.emit("end_recording");
 
-    getRoom(roomid:string):rooms|undefined{
+    }
+    endcall({ roomid, socket }: { roomid: string, socket: Socket }) {
+        const room = this.getRoom(roomid);
+        room?.user1.socket.emit("hangup");
+        room?.user2?.socket.emit("hangup");
+        this.onleave({ roomid });
+        return
+
+    }
+
+    handlevideostate({ socket, roomid, state }: { socket: Socket, roomid: string, state: boolean }) {
+        const user = this.getOtherUser(socket, roomid)
+        if (!user) socket.emit("no user found")
+        user.socket.emit("video-state", { state });
+    }
+
+    getRoom(roomid: string): rooms | undefined {
         return this.Rooms.get(roomid);
     }
 
-    getOtherUser(socket:Socket,roomid:string){
+    getOtherUser(socket: Socket, roomid: string) {
         const room = this.getRoom(roomid);
-        if(!room) return undefined
-        return Object.values(room).find((s)=> s.socket.id != socket.id);
+        if (!room) return undefined
+        return Object.values(room).find((s) => s.socket.id != socket.id);
     }
 
-    generate(){
+    generate() {
         return GlobalRoomId++;
     }
 }

@@ -121,11 +121,13 @@ export default function Room() {
         <Premission permission={permission} showPermissionBox={showPermissionBox} />
         <Header tittle="Podster" size="lg" />
         <div className="w-full h-full bg-[#f7f7f7] flex">
-          <div className="flex flex-col  h-full flex-1">
-            <div className="relative  min-w-[75%] h-full flex py-5 justify-center gap-8 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
-              <div className="relative bg-white aspect-video h-[100%] rounded-xl overflow-hidden flex items-center justify-center ">
-                {!userconnected ? " User not connected... " : <RenderRemoteVideo remotevid={remotevid} />}
-                <div className="z-3 absolute bottom-2 right-2 bg-white aspect-video h-[30%] rounded-xl overflow-hidden">
+          <div className="flex flex-col h-full flex-1">
+            <div className="relative w-full h-full flex justify-center items-center md:gap-8 md:py-5 md:min-w-[75%] shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+              <div className="h-[100%] w-[100%] md:w-auto md:aspect-video md:rounded-xl relative overflow-hidden flex items-center justify-center flex-col md:flex-row bg-white">
+                <div className="w-[100%] h-[50%] md:w-full md:h-full flex items-center justify-center">
+                  {!userconnected ? " User not connected... " : <RenderRemoteVideo remotevid={remotevid} />}
+                </div>
+                <div className="z-3 md:absolute bottom-2 right-2 md:aspect-video md:h-[30%] md:w-auto h-[50%] w-[100%] md:rounded-xl overflow-hidden bg-white">
                   <RenderLocalvideo remotevid={remotevid} localvid={localvid} />
                 </div>
               </div>

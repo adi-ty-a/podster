@@ -26,14 +26,12 @@ io.use((Socket, next) => {
 })
 
 io.on("connection", (socket) => {
-
   socket.onAny((event, ...args) => {
     console.log("EVENT:", event);
     console.log("DATA:", args);
   });
 
   socket.on("join", (data) => {
-    // if(!data.roomid) return "no roomid";
     console.log("roomid - > " + data);
     user.joinroom(socket, data);
   })

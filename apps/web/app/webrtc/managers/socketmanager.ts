@@ -6,7 +6,6 @@ export class socketManager{
     connect():Socket{
         this.socket =  io(process.env.NEXT_PUBLIC_SOCKET_URL,{withCredentials:true,transports: ["websocket"]});
         this.socket.on("connect", () => {
-            this.join();
         });
         return this.socket
     }

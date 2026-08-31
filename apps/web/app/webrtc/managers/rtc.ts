@@ -24,6 +24,7 @@ export class rtcmanage {
             this.rtc.createPeerConnection(true, roomid)
         });
         this.socket.on("Offer", (data) => {
+            console.log(data)
             this.User_connected();
             this.rtc.handleOffer(data)
         });

@@ -9,17 +9,17 @@ import { useState } from "react"
         Messages:MessageSquare
     }
 
-export const Quickinfo=({data,tittle}:{data:number,tittle: keyof typeof iconsmap})=>{
-    const Icon = iconsmap[tittle]
-    const [Tittle,setTittle] = useState(tittle)
-    const iconcolor = tittle == "Total_Calls" ? "white":"black" 
-    const size = tittle == "Messages" ? 20:22
+export const Quickinfo = ({ data, tittle }: { data: number, tittle: keyof typeof iconsmap }) => {
+    const [Tittle, setTittle] = useState(tittle)
     
-    return  <div className={`${tittle == "Total_Calls" ? "bg-black text-white":"bg-[#FAFAFA] text-black border border-[#EBEBEB]/80"} rounded-xl  max-w-[300px] w-full h-[75px]  mt-6 flex justify-start items-center gap-6 pl-4`}>
-            <Icon color={iconcolor} size={size}/>
-            <div className="">
-            <p className="text-xl font-bold">{data}</p>
-            <p>{tittle == "Total_Calls" ? "Total Calls":Tittle}</p>
-            </div>
-            </div>
+    return (
+        <div className="bg-white rounded-4xl p-4 sm:p-5 md:p-6 flex flex-col justify-between items-start w-full min-h-[110px] sm:min-h-[130px] md:min-h-[140px] shadow-sm border border-black/5 transition-all hover:shadow-md">
+            <p className="text-xs sm:text-lg text-[#8C8C8C] font-bold uppercase tracking-wider ">
+                {tittle === "Total_Calls" ? "Total Calls" : Tittle}
+            </p>
+            <p className="text-3xl ml-[25px] sm:text-4xl md:text-6xl font-bold text-[#434343] tracking-tight mt-1 ">
+                {data}
+            </p>
+        </div>
+    )
 }

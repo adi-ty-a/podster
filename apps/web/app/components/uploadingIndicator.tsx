@@ -8,38 +8,40 @@ export function UploadingIndicator() {
         const uploadprogress = useRecording((state)=>state.recordingProgress);
         const {isUploading} = useRecording();
         
-  return  <AnimatePresence>
-          {isUploading && 
-            <motion.div className="absolute"
-             initial={{
-            y:-100,
-            opacity:0
-            }}
-            animate={{
-              y:0,
-              opacity:100
-            }}
-            exit={{
-              y:-100,
-              opacity:0
-            }}
-            transition={{
-              duration:.4
-            }}>
-                <Alert className="w-[300px] flex flex-col gap-2">
-                  <AlertTitle>{filename}.mp4</AlertTitle>
-                  <AlertDescription className="w-full h-full flex flex-col ">
-                        <Progress value={uploadprogress} className="w-[100%]"/> 
-                        <div className="flex justify-between">
-                          <div>uploading...</div>
-                          <div >{uploadprogress}%</div>
-                        </div>
-                  </AlertDescription>
-                </Alert>
-              </motion.div> 
-            }
-          </AnimatePresence>
-
-  
+  return (
+    <AnimatePresence>
+      {isUploading && (
+        <motion.div 
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90vw] max-w-sm px-2"
+          initial={{
+            y: -100,
+            opacity: 0
+          }}
+          animate={{
+            y: 0,
+            opacity: 1
+          }}
+          exit={{
+            y: -100,
+            opacity: 0
+          }}
+          transition={{
+            duration: 0.4
+          }}
+        >
+          <Alert className="w-full flex flex-col gap-2 shadow-xl border-black/10 bg-white/95 backdrop-blur-sm">
+            <AlertTitle className="truncate font-semibold">{filename}.mp4</AlertTitle>
+            <AlertDescription className="w-full flex flex-col gap-1.5">
+              <Progress value={uploadprogress} className="w-full h-2" /> 
+              <div className="flex justify-between text-xs text-muted-foreground font-medium">
+                <span>Uploading...</span>
+                <span>{uploadprogress}%</span>
+              </div>
+            </AlertDescription>
+          </Alert>
+        </motion.div> 
+      )}
+    </AnimatePresence>
+  );
 }
 

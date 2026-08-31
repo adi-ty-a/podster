@@ -3,6 +3,16 @@ import { useState, useEffect, Dispatch, SetStateAction, ReactNode } from "react"
 import JoinPodcastBtn from "../home/buttoncomponet";
 import { AnimatePresence, motion } from "motion/react";
 export default function LandingNav({children,  menuboxclose, state}: { children:ReactNode[] | ReactNode, menuboxclose: Dispatch<SetStateAction<boolean>>, state?: boolean | false}) {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
 
     const fadeVariants = {
         hidden: { opacity: 0 },
@@ -16,20 +26,22 @@ export default function LandingNav({children,  menuboxclose, state}: { children:
         }
     };
 
+    const isFloating = !isMobile && !!state;
+
     return <motion.div
         animate={{
-            width: state ? "380px" : "100%",
-            borderRadius: state ? "32px" : 0,
-            height: state ? "48px" : "64px",
-            marginTop: state ? 10 : 0,
-            top: state ? 10 : 0,
-            opacity: state ? .7 : 1,
+            width: isFloating ? "380px" : "100%",
+            borderRadius: isFloating ? "32px" : 0,
+            height: isFloating ? "48px" : "64px",
+            marginTop: isFloating ? 10 : 0,
+            top: isFloating ? 10 : 0,
+            opacity: isFloating ? .7 : 1,
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="sticky top-0 flex justify-center bg-white/90 backdrop-blur-lg z-20 h-[64px] w-full ">
+        className="static md:sticky md:top-0 flex justify-center bg-white/90 backdrop-blur-lg z-20 h-[64px] w-full ">
         <div className="relative flex w-[80%] max-w-[1200px] justify-between items-center md:px-6 py-4 border-black/20">
             <AnimatePresence>
-                {!state && <motion.div
+                {!isFloating && <motion.div
                     key="logo"
                     variants={fadeVariants}
                     initial="hidden"
@@ -52,7 +64,7 @@ export default function LandingNav({children,  menuboxclose, state}: { children:
                     {children}
                     <div className="cursor-pointer text-[14px] text-[#898989] font-semibold">About</div>
                 </div>
-                {!state && <motion.div
+                {!isFloating && <motion.div
                     key="button"
                     variants={fadeVariants}
                     initial="hidden"

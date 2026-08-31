@@ -1,85 +1,59 @@
-"use client"
-import { useState, useEffect } from "react";
-import JoinPodcastBtn from "../home/buttoncomponet";
-import { AnimatePresence, motion } from "motion/react";
-export default function LandingNav(){
+import { RoomNameDialog } from "../dashboard/components/RoomNameDialog"
+import QuickinfoBoxs from "../dashboard/components/QuickActionBox/quickinfobox"
+import { UploadingIndicator } from "../components/uploadingIndicator"
+import JoinBox from "../dashboard/components/QuickActionBox/JoinRoom"
+import { RoomCard } from "../dashboard/components/RecBox/Roomcard"
+import RecordingsBox from "../dashboard/components/RecBox/recordingsBox"
+import { JoinRoomDialog } from "../dashboard/components/joinroombox"
 
-    const fadeVariants = {
-        hidden: { opacity: 0 },
-        visible: { 
-            opacity: 1, 
-            transition: { duration: 0.3, delay: 0.15 } 
-        },
-        exit: { 
-            opacity: 0, 
-            transition: { duration: 0.1 }
-        }
-    };
+export type RoomsWRecordings = {
+    name: string,
+    date: string,
+    roomId: string
+}
 
-    const [state, setstate] = useState(false);
-    useEffect(() => {
-        window.addEventListener("scroll", setScrolled);
-        return window.removeEventListener("scroll", setScrolled);
-    }, [])
+export default function Dashboard() {
+    return (
+        <div className="relative min-h-screen bg-[#F5F5F5] w-full flex flex-col items-center px-4 sm:px-6 md:px-10 lg:px-12 py-6 sm:py-8 lg:py-10 overflow-x-hidden">
+            <UploadingIndicator />
+            <div className="relative w-full max-w-6xl flex flex-col gap-6">
+                <div className="absolute -left-25 -top-2 size-11 sm:size-12 overflow-hidden flex items-center justify-center rounded-2xl bg-white shadow-sm shrink-0">
+                    <img
+                        src="/logoimg.jpg"
+                        alt="Podster Logo"
+                        className="size-[64px] object-cover object-center"
+                    />
+                </div>
+                {/* Header with Logo and Title */}
+                <div className="flex items-center gap-4 w-full ml-4">
+                    <h1 className="text-black text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+                </div>
 
-
-    const setScrolled = () => {
-        setstate(window.scrollY > 50);
-    }
-
-    const clicked = () => {
-        setstate(e => !e);
-        return
-    }
-
-    return <div className="relative bg-black h-screen w-screen text-white flex flex-col items-center h">
-        <motion.div
-
-            animate={{
-                width: state ? "380px" : "100%",
-                borderRadius: state ? "32px" : 0,
-                height: state ? "48px" : "64px",
-                marginTop: state ? 10 : 0
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="absolute top-0 flex justify-center bg-white/90 backdrop-blur-lg z-20 h-[64px] w-full">
-            <div className="relative flex w-[60%] max-w-[1200px] justify-between items-center md:px-6 py-4 border-black/20">
-                <AnimatePresence>
-                    {!state && <motion.div
-                        key="logo"
-                        variants={fadeVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="flex items-center justify-between gap-[20px]">
-                        <div className="relative  size-[36px] rounded-[14px] overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
-                            <div className="absolute -top-6  blur-[18px] w-[82px] h-[21px] bg-white z-1 flex " />
-                            <img
-                                src="logoimg.jpg"
-                                alt="logo"
-                                className="absolute w-[60px] h-[60px] object-cover -top-[12px] "
-                            />
+                {/* Main Content Grid */}
+                <main className="flex flex-col lg:flex-row gap-6 lg:gap-8 w-full items-start justify-center">
+                    {/* Left Column: Actions & Quick Info */}
+                    <div aria-label="Quick Actions & Statistics" className="flex-1 flex flex-col gap-4 sm:gap-6 w-full min-w-0">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">
+                            <div className="hidden sm:block">
+                                <RoomNameDialog />
+                            </div>
+                            <JoinRoomDialog />
                         </div>
-                        <div className="text-black text-2xl font-bold">Podster</div>
-                    </motion.div>}
-
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:flex justify-center gap-10 w-[460px] items-center hidden h-[32px] ">
-                        <div className="cursor-pointer text-[14px] text-[#898989] font-semibold ">Home</div>
-                        <div className="cursor-pointer text-[14px] text-[#898989] font-semibold" >Product</div>
-                        <div className="cursor-pointer text-[14px] text-[#898989] font-semibold">About</div>
+                        <QuickinfoBoxs />
                     </div>
 
-                    {!state && <motion.div
-                        key="button"
-                        variants={fadeVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit">
-                        <JoinPodcastBtn />
-                    </motion.div>}
-                </AnimatePresence>
+                    {/* Right Column: Downloads / Recordings */}
+                    <div className="w-full lg:w-[380px] xl:w-[420px] flex flex-col bg-[#E2E2E2] rounded-3xl p-4 sm:p-5 gap-3 max-h-[560px] min-h-[460px] shrink-0">
+                        <div className="px-2 font-semibold text-black/80 text-left w-full text-base sm:text-lg flex items-center justify-between">
+                            <span>Downloads</span>
+                            <span className="text-xs font-medium text-black/50 bg-black/5 px-2 py-0.5 rounded-full">5 items</span>
+                        </div>
+                        <div className="flex flex-col gap-3 pr-0.5 w-full flex-1 h-[100px]">
+                            <RecordingsBox />
+                        </div>
+                    </div>
+                </main>
             </div>
-        </motion.div>
-        <button className="bg-amber-200 rounded-full px-4 py-2 text-black mt-[100px] " onClick={clicked}>clickme</button>
-    </div>
+        </div>
+    )
 }

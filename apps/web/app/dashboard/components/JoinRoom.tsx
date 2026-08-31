@@ -28,7 +28,7 @@ const JoinRoom = ()=>{
         <Dialog>
       <DialogTrigger asChild>
         <div>
-            <Quickactions variant="create"/>
+            <Quickactions />
         </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

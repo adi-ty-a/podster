@@ -25,6 +25,9 @@ export class rtc {
         this.initaotr = initaotr
         this.pc = new RTCPeerConnection({ ...this.iceServer, iceTransportPolicy: 'relay' });
         this.pc.onicecandidate = this.handleICECandidateEvent;
+        if (this.initaotr == true) {
+            this.pc.onnegotiationneeded = this.handleNegotiationNeededEvent;
+        }
         this.pc.ontrack = this.handletrack;
         this.pc.onconnectionstatechange = async () => { console.log("CONNECTION STATE:", this.pc.connectionState) }
         this.pc.onsignalingstatechange = () => { console.log("SIGNALING STATE:", this.pc.signalingState) }
@@ -32,9 +35,6 @@ export class rtc {
         this.pc.oniceconnectionstatechange = () => { console.log("ICE STATE", this.pc.iceConnectionState) }
         const tracks = await this.track()
         tracks.getTracks().forEach(track => this.pc.addTrack(track, tracks));
-        if (this.initaotr == true) {
-            this.pc.onnegotiationneeded = this.handleNegotiationNeededEvent;
-        }
     }
 
     handleICECandidateEvent = (e: RTCPeerConnectionIceEvent) => {

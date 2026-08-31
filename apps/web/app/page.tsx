@@ -58,30 +58,6 @@ const Home = () => {
         </div>
       </div>}
       <div className=" bg-[#FAFDFF] h-full w-full w-full pt-1 px-1 pb-0 flex flex-col items-center">
-        {/* headernav */}
-        {/* <div className="relative top-0 w-screen border-b flex justify-center bg-white/90 backdrop-blur-lg z-20 ">
-          <div className="relative flex w-[90%] md:w-[80%] max-w-[1200px] justify-between items-center px-4 md:px-6 py-3  border-black/20">
-            <div className="flex items-center justify-between gap-[20px]">
-              <div className="relative  size-[40px] rounded-[14px] overflow-hidden shadow-[0_3px_10px_rgb(0,0,0,0.2)]">
-                <div className="absolute -top-6  blur-[18px] w-[82px] h-[25px] bg-white z-1 flex " />
-                <img
-                  src="logoimg.jpg"
-                  alt="logo"
-                  className="w-[70px] h-[70px] object-cover absolute -top-[15px] "
-                />
-              </div>
-              <div className="text-black text-2xl font-bold">Podster</div>
-            </div>
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:flex justify-center gap-10 w-[460px] items-center hidden">
-              <div className="cursor-pointer text-[14px] text-[#898989] font-semibold ">Home</div>
-              <div className="cursor-pointer text-[14px] text-[#898989] font-semibold" onClick={scrolltoview}>Product</div>
-              <div className="cursor-pointer text-[14px] text-[#898989] font-semibold">About</div>
-            </div>
-            <JoinPodcastBtn />
-            <MenuBox setfunction={setclose} />
-          </div>
-        </div> */}
-
         <LandingNav menuboxclose={setclose} state={scrolled}>
                     <div className="cursor-pointer text-[14px] text-[#898989] font-semibold" onClick={scrolltotop}>Home</div>
                     <div className="cursor-pointer text-[14px] text-[#898989] font-semibold" onClick={scrolltoview}>Product</div>

@@ -1,5 +1,7 @@
 import type { Socket } from "socket.io";
 import { RoomManager } from "./room.js";
+import cookie from "cookie"
+import jwt from "jsonwebtoken"
 export interface user {
     socket: Socket,
     name: string,
@@ -22,25 +24,27 @@ export class User {
         this.Users = this.Users.filter(x => x.socket.id !== socketid);
     }
 
-    // joinroom(socket:Socket,roomid:string){
-    //     const cookies = cookie.parse(socket.handshake.headers.cookie! || "");
-    //     const RoomToken = cookies.RoomToken
-    //     if(!RoomToken){
-    //         console.log("cookie")
-    //         return socket.disconnect()};
-    //     const jwtResponse :any= jwt.verify(RoomToken!,process.env.JWT_SECRET!)
-    //     if(jwtResponse.roomid !== roomid) {
-    //         console.log("socket jwt");
-    //         return socket.disconnect()}; 
-    //     const res = this.roomhandler.joinroom(roomid,{socket,name:"user2"});
-    //     socket.data.roomid = roomid;
-    //     socket.emit("joined",res)
-    // }
-    joinroom(socket: Socket, roomid: string) {
-        const res = this.roomhandler.joinroom(roomid, { socket, name: "user2" });
+    joinroom(socket:Socket,roomid:string){
+        const cookies = cookie.parse(socket.handshake.headers.cookie! || "");
+        const RoomToken = cookies.RoomToken
+        if(!RoomToken){
+            console.log("cookie")
+            return socket.disconnect()};
+        const jwtResponse :any= jwt.verify(RoomToken!,process.env.JWT_SECRET!);
+        if(jwtResponse.roomid !== roomid) {
+            console.log("socket jwt");
+            return socket.disconnect()}; 
+        const res = this.roomhandler.joinroom(roomid,{socket,name:"user2"});
         socket.data.roomid = roomid;
-        socket.emit("joined", res)
+        socket.emit("joined",res)
     }
+
+    
+    // joinroom(socket: Socket, roomid: string) {
+    //     const res = this.roomhandler.joinroom(roomid, { socket, name: "user2" });
+    //     socket.data.roomid = roomid;
+    //     socket.emit("joined", res)
+    // }
 
 
     initHandler(socket: Socket) {

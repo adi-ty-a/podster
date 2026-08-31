@@ -20,12 +20,13 @@ export class Manager {
     }
 
     async create() {
-        this.rtcmanage = new rtcmanage(this.socket, this.getmedia, this.onRemoteStream, this.onUserConnected, this.roomid);
         this.socket.connect()
+        this.rtcmanage = new rtcmanage(this.socket, this.getmedia, this.onRemoteStream, this.onUserConnected, this.roomid);
+        await this.rtcmanage.intialize();   
+        this.socket.join();
         this.socket.on("hangup", () => {
             this.hangup()
         })
-        await this.rtcmanage.intialize();
         console.log("socket connect");
         return
     }

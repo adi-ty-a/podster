@@ -23,7 +23,7 @@ roomRouter.post("/create",async(req:any,res)=>{
             })
             res.cookie("RoomToken",RoomToken,{
                 secure:false,
-                maxAge:60 * 60 * 4,
+                maxAge: 60 * 60 * 4 * 1000,
                 sameSite:"lax"
             });
             return res.json({
@@ -134,13 +134,20 @@ roomRouter.get("/rooms_w_recordings",async(req:any,res)=>{
             return {
                 name,date,roomId:id
             }
-        })    
-        return res.json({
-            status:true,
-            message:"rooms_with_recordings",
-            data
-        });
-    }catch(e){
+        })   
+        if(data.length > 0){
+            return res.json({
+                status:true,
+                message:"rooms_with_recordings",
+                data
+            });
+        } else{
+            return res.json({
+                status:true,
+                message:"No Recordings",
+            });
+        }
+        }catch(e){
             res.status(403).json({
             status:false,
             message:"db_error",
